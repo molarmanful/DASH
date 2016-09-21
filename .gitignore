@@ -1,0 +1,3 @@
+*.swp
+node-modules
+*.log
