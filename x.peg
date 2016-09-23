@@ -1,0 +1,77 @@
+start=a:expr*{
+  return a.filter(x=>!x.big)
+}
+
+expr=_/type
+
+//separators
+_=[ \n;]
+
+//types
+type=str/num/ls/aapp/app/def/arg/fn/a
+
+//strings
+str='"'a:([^"\\]/'\\'.)*'"'{
+  return{
+    type:'str',
+    body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
+  }
+}
+//numbers
+num=a:([0-9]+('.'[0-9]+)?('e''-'?[0-9]+)?/'.'[0-9]+('e''-'?[0-9]+)?){
+  var f
+  return{
+    type:'num',
+    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``)(a)
+  }
+}
+
+//list
+ls='['a:expr*']'{
+  return{
+    type:'ls',
+    body:a.filter(x=>!x.big)
+  }
+}
+//expression list (holds multiple expressions)
+arg='('a:expr*')'{
+  return a.filter(x=>!x.big)
+}
+//argument reference
+a=a:('#'num){
+  return{
+    type:'a',
+    body:a[1]
+  }
+}
+
+//function reference
+fn=a:[^ \n;0-9".,[\]()@#\\]+{
+  return{
+    type:'fn',
+    body:a.join``
+  }
+}
+//function application
+app=a:(fn/def)_* b:type{
+  return{
+    type:'app',
+    head:a.pop?a[1]:a,
+    body:b
+  }
+}
+aapp=a:app','_* b:type{
+  return{
+    type:'app',
+    head:a.pop?a[1]:a,
+    body:b
+  }
+}
+//function definition
+def=a:('\\'fn)?_*'@'_*b:type?{
+  return{
+    type:'def',
+    head:(a&&a[1])||'',
+    body:b||''
+  }
+}
