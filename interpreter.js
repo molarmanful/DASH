@@ -14,9 +14,7 @@ tc=(x,y='Unknown error')=>{
   try{f=x(),isNaN(f)&&eval('.')}catch(e){error(y)}
   return f
 }
-deepfind=x=>{
-  x.find(a=>a.body?deepfind(a):a.pop?a.map(deepfind):a)
-}
+hasapp=x=>x.type=='app'?1:x.type=='ls'?+x.body.some(hasapp):x.map?+x.some(hasapp):0
 
 cm={
   E:x=>d.config({precision:x.body}),
@@ -67,8 +65,10 @@ cm={
   '|-':cm.trunc,
   cmp:x=>y=>d(x.body).cmp(y.body),
   '=':cm.cmp,
-  neg:x=>d(x.body).neg()
-  '_':cm.neg
+  neg:x=>d(x.body).neg(),
+  '_':cm.neg,
+  for:x=>y=>_.flatMap(y.body,a=>({type:'apply',head:x,body:a})),
+  '>':cm.for
 }
 
 error=e=>{
