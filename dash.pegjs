@@ -79,7 +79,7 @@ aapp=a:app','_* b:type{
 def=a:('\\'fn)?_*'@'_*b:type?{
   return{
     type:'def',
-    body:a[1]||'',
+    body:a?a[1]:'',
     f:b||''
   }
 }

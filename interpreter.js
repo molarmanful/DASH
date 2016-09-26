@@ -17,6 +17,7 @@ tc=(x,y='Unknown error')=>{
   try{f=x(),isNaN(f)&&eval('.')}catch(e){error(y)}
   return f
 }
+get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 form=x=>
   x.type=='num'||x.type=='fn'||x.type=='str'
     ?x.body
@@ -71,7 +72,8 @@ cm={
   cmp:x=>y=>({type:'num',body:''+d(x.body).cmp(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
   for:x=>y=>_.flatMap(y.body,a=>({type:'apply',head:x,body:a})),
-  len:x=>x.type=='ls'?{type:'num',body:''+x}:{type:'bool',body:0}
+  len:x=>({type:'num',body:x.body.length}),
+  get:x=>y=>y.type=='ls'?{type:'ls',body:y.body.map(a=>G(x.body,a.body))}:{type:'num',body:G(x.body,y.body)}
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -88,6 +90,8 @@ cm['|-']=cm.trunc
 cm['=']=cm.cmp
 cm['_']=cm.neg
 cm['>']=cm.for
+cm['__']=cm.len
+cm[':']=cm.get
 
 error=e=>{
   console.log('ERROR: '+e)
@@ -105,7 +109,7 @@ I=(x,...y)=>
             ?{type:'pt',body:z.body,g:x.f}
             :X
           :z.type=='def'
-            ?I(z,...y.concat(x.f))
+            ?I(z.f,...y.concat(x.f))
             :z.type=='pt'
               ?cm[z.body](z.g)(x.f)
               :z
@@ -115,5 +119,6 @@ I=(x,...y)=>
             :error('the argument does not exist')
           :x
 
-console.log(JSON.stringify(I(ps),null,2))
-//cm.out(I(ps,''))
+In=(x,y=0)=>(tr(x).map(x=>{y=x.type=='app'||y}),y);
+while(In(ps))ps=I(ps),console.log(ps);
+//cm.out(In(ps))
