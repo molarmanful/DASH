@@ -8,7 +8,7 @@ expr=_/type
 _=[ \n;]
 
 //types
-type=str/num/ls/aapp/app/def/arg/fn/a
+type=str/num/bool/ls/aapp/app/def/arg/fn/a
 
 //strings
 str='"'a:([^"\\]/'\\'.)*'"'{
@@ -26,27 +26,35 @@ num=a:([0-9]+('.'[0-9]+)?('e''-'?[0-9]+)?/'.'[0-9]+('e''-'?[0-9]+)?){
   }
 }
 
+//bool
+bool=a:[TF]{
+  return{
+    type:'bool',
+    body:+(a=='T')
+  }
+}
+
 //list
-ls='['a:expr*']'{
+ls='['a:expr*']'?{
   return{
     type:'ls',
     body:a.filter(x=>!x.big)
   }
 }
 //expression list (holds multiple expressions)
-arg='('a:expr*')'{
+arg='('a:expr*')'?{
   return a.filter(x=>!x.big)
 }
 //argument reference
-a=a:('#'num){
+a=a:('#'[0-9]+){
   return{
     type:'a',
-    body:a[1]
+    body:a[1].join``
   }
 }
 
 //function reference
-fn=a:[^ \n;0-9".,[\]()@#\\]+{
+fn=a:[^ \n;0-9".,[\]()@#\\TF]+{
   return{
     type:'fn',
     body:a.join``
@@ -56,22 +64,22 @@ fn=a:[^ \n;0-9".,[\]()@#\\]+{
 app=a:(fn/def)_* b:type{
   return{
     type:'app',
-    head:a.pop?a[1]:a,
-    body:b
+    body:a.pop?a[1]:a,
+    f:b
   }
 }
 aapp=a:app','_* b:type{
   return{
     type:'app',
-    head:a.pop?a[1]:a,
-    body:b
+    body:a.pop?a[1]:a,
+    f:b
   }
 }
 //function definition
 def=a:('\\'fn)?_*'@'_*b:type?{
   return{
     type:'def',
-    head:(a&&a[1])||'',
-    body:b||''
+    body:a[1]||'',
+    f:b||''
   }
 }

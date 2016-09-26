@@ -19,6 +19,7 @@
   "dependencies": {
     "decimal.js": "^6.0.0",
     "lodash": "^4.16.1",
-    "pegjs": "^0.10.0"
+    "pegjs": "^0.10.0",
+    "traverse": "^0.6.6"
   }
 }
