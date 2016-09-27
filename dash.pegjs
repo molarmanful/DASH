@@ -11,7 +11,7 @@ _=[ \n;]
 type=str/num/bool/ls/aapp/app/def/arg/fn/a
 
 //strings
-str='"'a:([^"\\]/'\\'.)*'"'{
+str='"'a:([^"\\]/'\\'.)*'"'?{
   return{
     type:'str',
     body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
@@ -54,7 +54,7 @@ a=a:('#'[0-9]+){
 }
 
 //function reference
-fn=a:[^ \n;0-9".,[\]()@#\\TF]+{
+fn=a:[^ \n;0-9".,[\]()@#TF]+{
   return{
     type:'fn',
     body:a.join``
@@ -76,10 +76,9 @@ aapp=a:app','_* b:type{
   }
 }
 //function definition
-def=a:('\\'fn)?_*'@'_*b:type?{
+def='@'_*b:type?{
   return{
     type:'def',
-    body:a?a[1]:'',
-    f:b||''
+    body:b||''
   }
 }
