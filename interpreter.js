@@ -73,7 +73,7 @@ cm={
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
   for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a}))}),
   len:x=>({type:'num',body:x.body.length}),
-  get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>G(x.body,a.body))}:{type:'num',body:G(x.body,y.body)},
+  get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:get(x.body,y.body),
   var:(x,y)=>x.type=='fn'?(cm[x.body]=x=>I(y),y):error('bad var name')
 }
 cm['||']=cm.abs
@@ -123,4 +123,4 @@ I=(x,...y)=>
 
 In=(x,y=0)=>(tr(x).map(x=>{y=(x.type=='app')|y}),y)
 exec=x=>In(x)?exec(I(x)):x;
-cm.out(exec(ps))
+console.log(exec(ps))
