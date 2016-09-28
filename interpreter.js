@@ -121,6 +121,6 @@ I=(x,...y)=>
     :error('the argument does not exist')
   :x
 
-In=(x,y=0)=>(tr(x).map(x=>{y=(x.type=='app')|y}),y)
-exec=x=>In(x)?exec(I(x)):x;
+In=x=>tr(x).nodes().some(a=>a.type=='app')
+exec=x=>In(x)?exec(I(x)):x
 console.log(exec(ps))
