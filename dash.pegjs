@@ -68,10 +68,10 @@ app=a:(fn/def)_* b:type{
     f:b
   }
 }
-aapp=a:app','_* b:type{
+aapp=a:(app/arg) _*','_*b:type{
   return{
     type:'app',
-    body:a.pop?a[1]:a,
+    body:a,
     f:b
   }
 }

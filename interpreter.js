@@ -71,7 +71,7 @@ cm={
   trunc:x=>({type:'num',body:''+d.trunc(x.body)}),
   cmp:(x,y)=>({type:'num',body:''+d(x.body).cmp(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
-  for:(x,y)=>_.flatMap(y.body,a=>({type:'apply',head:x,body:a})),
+  for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>G(x.body,a.body))}:{type:'num',body:G(x.body,y.body)},
   var:(x,y)=>x.type=='fn'?(cm[x.body]=x=>I(y),y):error('bad var name')
@@ -121,7 +121,6 @@ I=(x,...y)=>
     :error('the argument does not exist')
   :x
 
-In=(x,y=0)=>(tr(x).map(x=>{y=x.type=='app'||y?1:0}),y)
-while(In(ps))ps=I(ps),console.log(ps);
-cm.out(ps)
-//cm.out(In(ps))
+In=(x,y=0)=>(tr(x).map(x=>{y=(x.type=='app')|y}),y)
+exec=x=>In(x)?exec(I(x)):x;
+cm.out(exec(ps))
