@@ -74,7 +74,7 @@ cm={
   for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:get(x.body,y.body),
-  var:(x,y)=>x.type=='fn'?(cm[x.body]=x=>I(y),y):error('bad var name')
+  var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name')
 }
 cm['||']=cm.abs
 cm['+']=cm.add
