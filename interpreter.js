@@ -35,10 +35,10 @@ form=x=>
 
 cm={
   out:x=>(console.log(form(x)),x),
-  E:x=>({type:'num',body:''+d.config({precision:x.body})}),
-  abs:x=>({type:'num',body:''+d.abs}),
-  acos:x=>({type:'num',body:''+d.acos}),
-  acosh:x=>({type:'num',body:''+d.acosh}),
+  E:x=>(d.config({precision:+x.body}),x),
+  abs:x=>({type:'num',body:''+d.abs(x.body)}),
+  acos:x=>({type:'num',body:''+d.acos(x.body)}),
+  acosh:x=>({type:'num',body:''+d.acosh(x.body)}),
   add:(x,y)=>({type:'num',body:''+d.add(x.body,y.body)}),
   asin:x=>({type:'num',body:''+d.asin(x.body)}),
   asinh:x=>({type:'num',body:''+d.asinh(x.body)}),
@@ -71,10 +71,11 @@ cm={
   trunc:x=>({type:'num',body:''+d.trunc(x.body)}),
   cmp:(x,y)=>({type:'num',body:''+d(x.body).cmp(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
-  for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a}))}),
+  for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
-  get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:get(x.body,y.body),
-  var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name')
+  get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
+  var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name'),
+  join:(x,y)=>({type:'str',body:x.body.map(a=>a.body).join(y.body)})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -94,6 +95,7 @@ cm['>']=cm.for
 cm['__']=cm.len
 cm[':']=cm.get
 cm['\\']=cm.var
+cm['><']=cm.join
 
 error=e=>{
   console.log('ERROR: '+e)
