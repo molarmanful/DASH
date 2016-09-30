@@ -76,7 +76,9 @@ cm={
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name'),
   join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
-  split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))})
+  split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
+  tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.charCodeAt()}))}),
+  fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCharCode(0|a.body)).join``:String.fromCharCode(0|x.body)})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
