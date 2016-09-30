@@ -75,7 +75,8 @@ cm={
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name'),
-  join:(x,y)=>({type:'str',body:x.body.map(a=>a.body).join(y.body)})
+  join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
+  split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -96,6 +97,7 @@ cm['__']=cm.len
 cm[':']=cm.get
 cm['\\']=cm.var
 cm['><']=cm.join
+cm['<>']=cm.split
 
 error=e=>{
   console.log('ERROR: '+e)
@@ -115,7 +117,7 @@ I=(x,...y)=>
     :z.type=='def'?
       I(z.body,...y.concat(x.f))
     :z.type=='pt'?
-      cm[(z.map?z[0]:z).body](z.f,x.f)
+      cm[I(z,...y).body](z.f,I(x.f))
     :error('bad function call')
   :x.type=='a'?
     y[x.body]?
@@ -125,4 +127,4 @@ I=(x,...y)=>
 
 In=x=>tr(x).nodes().some(a=>a.type=='app')
 exec=x=>In(x)?exec(I(x)):x
-console.log(exec(ps))
+console.log(JSON.stringify(exec(ps),null,2))
