@@ -100,6 +100,7 @@ cm[':']=cm.get
 cm['\\']=cm.var
 cm['><']=cm.join
 cm['<>']=cm.split
+cm['e^']=cm.exp
 
 error=e=>{
   console.log('ERROR: '+e)
