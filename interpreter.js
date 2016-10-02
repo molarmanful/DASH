@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 fs=require('fs')
 peg=require('pegjs')
 _=require('lodash')
@@ -11,13 +13,8 @@ d.config({
 lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+''
 code=fs.readFileSync(process.argv[2])+''
 ps=peg.generate(lex).parse(code)
-mon=x=>x.type||x.length<2
-tc=(x,y='Unknown error')=>{
-  f=0
-  try{f=x(),isNaN(f)&&eval('.')}catch(e){error(y)}
-  return f
-}
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
+tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
 form=x=>
   x.type=='num'||x.type=='fn'||x.type=='str'?
     x.body
@@ -35,7 +32,7 @@ form=x=>
 
 cm={
   out:x=>(console.log(form(x)),x),
-  E:x=>(d.config({precision:+x.body}),x),
+  E:x=>(d.config({precision:0|x.body}),x),
   abs:x=>({type:'num',body:''+d.abs(x.body)}),
   acos:x=>({type:'num',body:''+d.acos(x.body)}),
   acosh:x=>({type:'num',body:''+d.acosh(x.body)}),
@@ -78,9 +75,13 @@ cm={
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
   tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.charCodeAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCharCode(0|a.body)).join``:String.fromCharCode(0|x.body)}),
-  cond:(x,y)=>x.body?y:{type:'bool',body:0},
-  not:x=>({type:'bool',body:x.body||+x.body||x.body.length?'F':'T'}),
-  tn:x=>({type:'num',body:''+d(x.body)})
+  if:(x,y)=>tru(x).body?I({type:'app',body:y,f:{type:'bool',body:1}}):{type:'bool',body:0},
+  else:(x,y)=>tru(x).body?x:I({type:'app',body:y,f:{type:'bool',body:0}}),
+  bool:tru,
+  not:x=>({type:'bool',body:+!tru(x).body}),
+  num:x=>({type:'num',body:''+d(x.body)}),
+  rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?x.body:[]._)}),
+  con:(x,y)=>(x.type=='str'||x.type=='num')&&(y.type=='str'||y.type=='num')?{type:'str',body:''.concat(x.body,y.body)}:{type:'ls',body:_.concat(x.body,y.body).map(a=>a.big?{type:'str',body:a}:a)}
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -102,9 +103,12 @@ cm[':']=cm.get
 cm['><']=cm.join
 cm['<>']=cm.split
 cm['e^']=cm.exp
-cm['?']=cm.cond
+cm['?']=cm.if
+cm['!?']=cm.else
 cm['!']=cm.not
-cm['$']=cm.tn
+cm[',!']=cm.bool
+cm[',$']=cm.num
+cm['++']=cm.con
 
 vs={}
 
@@ -128,7 +132,7 @@ I=x=>
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body].length>1?
-        {type:'pt',body:z.body,f:x.f}
+        {type:'pt',body:z.body,f:I(x.f)}
       :cm[z.body](I(x.f))
     :z.type=='def'?
       I(ua(z,x.f)).body

@@ -1,4 +1,4 @@
-start=a:expr*{
+start=a:(com/expr)*{
   return a.filter(x=>!x.big)
 }
 
@@ -9,6 +9,9 @@ _=[ \n;]
 
 //types
 type=str/num/bool/ls/var/aapp/app/def/arg/fn/a
+
+//comments
+com='#.'[^\n]*{return''}
 
 //strings
 str='"'a:([^"\\]/'\\'.)*'"'?{
