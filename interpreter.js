@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 fs=require('fs')
+fg=require('flags')
 peg=require('pegjs')
 _=require('lodash')
 d=require('decimal.js')
@@ -10,8 +11,11 @@ d.config({
   toExpNeg:-9e15,
   toExpPos:9e15
 })
+fg.defineBoolean('expr',true)
+fg.defineString('f')
+fg.parse()
 lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+''
-code=fs.readFileSync(process.argv[2])+''
+code=fs.readFileSync(fg.get('f'))+''
 ps=peg.generate(lex).parse(code)
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
@@ -145,4 +149,5 @@ I=x=>
 
 In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body]))
 exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
-exec(ps)
+
+fg.get('expr')?console.log(form(exec(ps))):exec(ps)
