@@ -1,6 +1,6 @@
 {
-  "name": "dash",
-  "version": "1.0.0",
+  "name": "dashlang",
+  "version": "0.0.1",
   "description": "A great leap forward in programming language design.",
   "main": "interpreter.js",
   "repository": {
@@ -14,8 +14,8 @@
   },
   "bin":{
     "dash":"./interpreter.js"
-  }
-  "homepage": "https://github.com/molarmanful/DASH#readme",
+  },
+  "homepage":"https://github.com/molarmanful/DASH#readme",
   "dependencies": {
     "decimal.js": "^6.0.0",
     "lodash": "^4.16.1",
