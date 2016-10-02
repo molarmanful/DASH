@@ -16,8 +16,10 @@ ps=peg.generate(lex).parse(code)
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
 form=x=>
-  x.type=='num'||x.type=='fn'||x.type=='str'?
+  x.type=='num'||x.type=='fn'?
     x.body
+  :x.type=='str'?
+    `"${x.body.replace(/"/g,'\\"')}"`
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
@@ -27,7 +29,7 @@ form=x=>
   :x.map?
     `(${x.map(a=>form(a)).join` `})`
   :x.type=='pt'?
-    form(x.body)+form(x.f)
+    x.body+form(x.f)
   :error('failed to format')
 
 cm={
@@ -43,7 +45,7 @@ cm={
   atanh:x=>({type:'num',body:''+d.atanh(x.body)}),
   atant:(x,y)=>({type:'num',body:''+d.atan2(x.body,y.body)}),
   ceil:x=>({type:'num',body:''+d.ceil(x.body)}),
-  cos:(x,y)=>({type:'num',body:''+d.cos(x.body)}),
+  cos:x=>({type:'num',body:''+d.cos(x.body)}),
   cosh:(x,y)=>({type:'num',body:''+d.cosh(x.body)}),
   div:(x,y)=>({type:'num',body:''+d.div(x.body,y.body)}),
   exp:x=>({type:'num',body:''+d.exp(x.body)}),
@@ -81,7 +83,7 @@ cm={
   not:x=>({type:'bool',body:+!tru(x).body}),
   num:x=>({type:'num',body:''+d(x.body)}),
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?x.body:[]._)}),
-  con:(x,y)=>(x.type=='str'||x.type=='num')&&(y.type=='str'||y.type=='num')?{type:'str',body:''.concat(x.body,y.body)}:{type:'ls',body:_.concat(x.body,y.body).map(a=>a.big?{type:'str',body:a}:a)}
+  con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.body,y.body).map(a=>a.big?{type:'str',body:a}:a)}
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -108,7 +110,7 @@ cm['!?']=cm.else
 cm['!']=cm.not
 cm[',!']=cm.bool
 cm[',$']=cm.num
-cm['++']=cm.con
+cm['&']=cm.con
 
 vs={}
 
@@ -142,5 +144,5 @@ I=x=>
   :x
 
 In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body]))
-exec=x=>In(x)?exec(I(x)):x
-console.log(JSON.stringify(exec(ps),null,2))
+exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
+exec(ps)
