@@ -74,11 +74,13 @@ cm={
   for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
-  var:(x,y)=>x.type=='fn'?(cm[x.body]=a=>I(y),y):error('bad var name'),
   join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
   tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.charCodeAt()}))}),
-  fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCharCode(0|a.body)).join``:String.fromCharCode(0|x.body)})
+  fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCharCode(0|a.body)).join``:String.fromCharCode(0|x.body)}),
+  cond:(x,y)=>x.body?y:{type:'bool',body:0},
+  not:x=>({type:'bool',body:x.body||+x.body||x.body.length?'F':'T'}),
+  tn:x=>({type:'num',body:''+d(x.body)})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -97,37 +99,44 @@ cm['_']=cm.neg
 cm['>']=cm.for
 cm['__']=cm.len
 cm[':']=cm.get
-cm['\\']=cm.var
 cm['><']=cm.join
 cm['<>']=cm.split
 cm['e^']=cm.exp
+cm['?']=cm.cond
+cm['!']=cm.not
+cm['$']=cm.tn
+
+vs={}
 
 error=e=>{
   console.log('ERROR: '+e)
   process.exit(1)
 }
 
-I=(x,...y)=>
+ua=(x,y)=>tr(x).map(function(a){
+  a.type=='a'&&this.update(a.body?{type:'a',body:--a.body}:y)
+})
+I=x=>
   x.map?
-    (X=x.map(a=>I(a,...y)))[X.length-1]
+    (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
-    {type:'ls',body:x.body.map(a=>I(a,...y))}
+    {type:'ls',body:x.body.map(a=>I(a))}
+  :x.type=='var'?
+    (vs[x.body.body]=x.f)
+  :x.type=='fn'&&vs[x.body]?
+    I(vs[x.body])
   :x.type=='app'?
-    (z=I(x.body,...y)).type=='fn'?
+    (z=I(x.body)).type=='fn'?
       cm[z.body].length>1?
         {type:'pt',body:z.body,f:x.f}
-      :cm[z.body](I(x.f,...y))
+      :cm[z.body](I(x.f))
     :z.type=='def'?
-      I(z.body,...y.concat(x.f))
+      I(ua(z,x.f)).body
     :z.type=='pt'?
-      cm[I(z,...y).body](z.f,I(x.f))
-    :error('bad function call')
-  :x.type=='a'?
-    y[x.body]?
-      y[x.body]
-    :error('the argument does not exist')
+      cm[I(z).body](z.f,I(x.f))
+    :x
   :x
 
-In=x=>tr(x).nodes().some(a=>a.type=='app')
+In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body]))
 exec=x=>In(x)?exec(I(x)):x
 console.log(JSON.stringify(exec(ps),null,2))

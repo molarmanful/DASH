@@ -8,7 +8,7 @@ expr=_/type
 _=[ \n;]
 
 //types
-type=str/num/bool/ls/aapp/app/def/arg/fn/a
+type=str/num/bool/ls/var/aapp/app/def/arg/fn/a
 
 //strings
 str='"'a:([^"\\]/'\\'.)*'"'?{
@@ -49,12 +49,12 @@ arg='('a:expr*')'?{
 a=a:('#'[0-9]+){
   return{
     type:'a',
-    body:a[1].join``
+    body:+a[1].join``
   }
 }
 
 //function reference
-fn=a:[^ \n;0-9".,[\]()@#TF]+{
+fn=a:[^ \n;0-9".[\]\\()@#TF]+{
   return{
     type:'fn',
     body:a.join``
@@ -68,7 +68,7 @@ app=a:(fn/def)_* b:type{
     f:b
   }
 }
-aapp=a:(app/arg) _*','_*b:type{
+aapp=a:(app/arg) _*b:type{
   return{
     type:'app',
     body:a,
@@ -76,9 +76,16 @@ aapp=a:(app/arg) _*','_*b:type{
   }
 }
 //function definition
-def='@'_*b:type?{
+def='@'_*b:type{
   return{
     type:'def',
-    body:b||''
+    body:b
+  }
+}
+var=a:fn _*'\\'_*b:type{
+  return{
+    type:'var',
+    body:a,
+    f:b
   }
 }
