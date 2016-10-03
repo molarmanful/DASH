@@ -1,6 +1,6 @@
 {
   "name": "dashlang",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A great leap forward in programming language design.",
   "main": "interpreter.js",
   "repository": {
