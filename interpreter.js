@@ -87,7 +87,9 @@ cm={
   not:x=>({type:'bool',body:+!tru(x).body}),
   num:x=>({type:'num',body:''+d(x.body)}),
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?x.body:[]._)}),
-  con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.body,y.body).map(a=>a.big?{type:'str',body:a}:a)}
+  con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.body,y.body).map(a=>a.big?{type:'str',body:a}:a)},
+  rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
+  rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
