@@ -2,10 +2,12 @@ start=a:(com/expr)*{
   return a.filter(x=>!x.big)
 }
 
-expr=_/type
+expr=a:(_/type)';'?{
+  return a
+}
 
 //separators
-_=[ \n;]
+_=[ \n]
 
 //types
 type=str/num/bool/ls/var/aapp/app/def/arg/fn/a/ref
