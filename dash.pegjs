@@ -5,7 +5,7 @@ start=a:(com/expr)*{
 expr=_/type
 
 //separators
-_=[ \n,]
+_=[ \n;]
 
 //types
 type=str/num/bool/ls/var/aapp/app/def/arg/fn/a
@@ -57,7 +57,7 @@ a=a:('#'[0-9]+){
 }
 
 //function reference
-fn=a:[^ \n,0-9".[\]\\()@#TF]+{
+fn=a:[^ \n;0-9".[\]\\()@#TF]+{
   return{
     type:'fn',
     body:a.join``
