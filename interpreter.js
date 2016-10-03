@@ -34,6 +34,8 @@ form=x=>
     `(${x.map(a=>form(a)).join` `})`
   :x.type=='pt'?
     x.body+form(x.f)
+  :x.type=='a'?
+    '#'+x.body
   :error('failed to format')
 
 cm={
@@ -74,7 +76,7 @@ cm={
   trunc:x=>({type:'num',body:''+d.trunc(x.body)}),
   cmp:(x,y)=>({type:'num',body:''+d(x.body).cmp(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
-  for:(x,y)=>({type:'ls',body:_.flatMap(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
+  map:(x,y)=>({type:'ls',body:_.map(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
@@ -89,7 +91,9 @@ cm={
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
   rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
-  rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))})
+  rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))}),
+  and:(x,y)=>({type:'bool',body:tru(x).body&&tru(y).body}),
+  or:(x,y)=>({type:'bool',body:tru(x).body||tru(y).body})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -117,6 +121,8 @@ cm['!']=cm.not
 cm[',!']=cm.bool
 cm[',$']=cm.num
 cm['&']=cm.con
+cm['\\/']=cm.and
+cm['/\\']=cm.or
 
 vs={}
 
@@ -135,6 +141,8 @@ I=x=>
     {type:'ls',body:x.body.map(a=>I(a))}
   :x.type=='var'?
     (vs[x.body.body]=x.f)
+  :x.type=='ref'?
+    I(vs[x.body])
   :x.type=='fn'&&vs[x.body]?
     I(vs[x.body])
   :x.type=='app'?
@@ -149,7 +157,7 @@ I=x=>
     :x
   :x
 
-In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body]))
+//In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
 
 fg.get('expr')?console.log(form(exec(ps))):exec(ps)

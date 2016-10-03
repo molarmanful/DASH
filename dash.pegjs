@@ -8,7 +8,7 @@ expr=_/type
 _=[ \n;]
 
 //types
-type=str/num/bool/ls/var/aapp/app/def/arg/fn/a
+type=str/num/bool/ls/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -53,6 +53,12 @@ a=a:('#'[0-9]+){
   return{
     type:'a',
     body:+a[1].join``
+  }
+}
+ref=a:('#'fn){
+  return{
+    type:'ref',
+    body:a[1].body
   }
 }
 
