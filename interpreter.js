@@ -36,6 +36,8 @@ form=x=>
     x.body+form(x.f)
   :x.type=='a'?
     '#'+x.body
+  :x.type=='app'?
+    form(x.body)+' '+form(x.f)
   :error('failed to format')
 
 cm={
@@ -109,7 +111,7 @@ cm['-']=cm.sub
 cm['|-']=cm.trunc
 cm['=']=cm.cmp
 cm['_']=cm.neg
-cm['>']=cm.for
+cm['>']=cm.map
 cm['__']=cm.len
 cm[':']=cm.get
 cm['><']=cm.join
