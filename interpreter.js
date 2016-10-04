@@ -45,7 +45,7 @@ form=x=>
 
 cm={
   out:x=>(console.log(form(x)),x),
-  in:x=>(i=prompt(x,0),i?{type:'str',body:i}:{type:'bool',body:0}),
+  in:x=>(i=prompt('',0),i?{type:'str',body:i}:{type:'bool',body:0}),
   E:x=>(d.config({precision:0|x.body}),x),
   abs:x=>({type:'num',body:''+d.abs(x.body)}),
   acos:x=>({type:'num',body:''+d.acos(x.body)}),
