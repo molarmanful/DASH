@@ -119,7 +119,8 @@ cm={
   or:(x,y)=>({type:'bool',body:tru(x).body||tru(y).body}),
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
-  eval:x=>I(parser.parse(x.body))
+  eval:x=>I(parser.parse(x.body)),
+  app:(x,y)=>I({type:'app',body:x,f:y})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -150,6 +151,7 @@ cm['&']=cm.con
 cm['\\/']=cm.and
 cm['/\\']=cm.or
 cm['|']=cm.eval
+cm[',']=cm.app
 
 vs={}
 
