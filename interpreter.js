@@ -107,9 +107,9 @@ cm={
   map:(x,y)=>({type:'ls',body:_.map(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
-  join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
+  join:(x,y)=>({type:'str',body:_.map(x.body,a=>a.body).join(y.body)}),
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
-  tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.codePointAt()}))}),
+  tc:x=>({type:'ls',body:_.map(x.body,a=>({type:'num',body:''+a.codePointAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
   if:(x,y)=>I({type:'app',body:y.body[+!tru(x).body],f:{type:'bool',body:tru(x).body}}),
   bool:tru,
@@ -123,6 +123,8 @@ cm={
   src:x=>({type:'str',body:form(x)}),
   eval:x=>I(parser.parse(x.body)),
   app:(x,y)=>I({type:'app',body:x,f:y}),
+  delay:(x,y)=>setTimeout(I({type:'app',body:x,f:0|y}),0|y.body),
+  sort:x=>({type:'ls',body:_.sortBy(Array.from(x.body).map(a=>a.big?{type:'str',body:a}:a),a=>a.body)}),
   type:x=>({type:'str',body:x.type})
 }
 cm['||']=cm.abs
@@ -158,6 +160,7 @@ cm[',,']=cm.src
 cm['&']=cm.con
 cm['|']=cm.eval
 cm[',']=cm.app
+cm['_,']=cm.delay
 
 vs={}
 
