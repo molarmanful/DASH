@@ -34,10 +34,12 @@ form=x=>
     `(${x.map(a=>form(a)).join` `})`
   :x.type=='pt'?
     x.body+form(x.f)
-  :x.type=='a'?
+  :x.type=='a'||x.type=='ref'?
     '#'+x.body
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
+  :x.type=='var'?
+    form(x.body)+'\\'+form(x.f)
   :error('failed to format')
 
 cm={
