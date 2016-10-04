@@ -122,7 +122,8 @@ cm={
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
   eval:x=>I(parser.parse(x.body)),
-  app:(x,y)=>I({type:'app',body:x,f:y})
+  app:(x,y)=>I({type:'app',body:x,f:y}),
+  type:x=>({type:'str',body:x.type})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
