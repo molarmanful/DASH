@@ -97,26 +97,28 @@ cm={
   tan:x=>({type:'num',body:''+d.tan(x.body)}),
   tanh:x=>({type:'num',body:''+d.tanh(x.body)}),
   trunc:x=>({type:'num',body:''+d.trunc(x.body)}),
-  cmp:(x,y)=>({type:'num',body:''+d(x.body).cmp(y.body)}),
+  cmp:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)}),
+  eq:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)===0}),
+  gt:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)===1}),
+  lt:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)===-1}),
+  lteq:(x,y)=>({type:'bool',body:d(x.body).lte(y.body)}),
+  gteq:(x,y)=>({type:'bool',body:d(x.body).gte(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
   map:(x,y)=>({type:'ls',body:_.map(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   join:(x,y)=>({type:'str',body:Array.from(x.body).map(a=>a.body).join(y.body)}),
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
-  tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.charCodeAt()}))}),
-  fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCharCode(0|a.body)).join``:String.fromCharCode(0|x.body)}),
-  if:(x,y)=>tru(x).body?I({type:'app',body:y,f:{type:'bool',body:1}}):{type:'bool',body:0},
-  else:(x,y)=>tru(x).body?x:I({type:'app',body:y,f:{type:'bool',body:0}}),
+  tc:x=>({type:'ls',body:Array.from(x.body).map(a=>({type:'num',body:''+a.codePointAt()}))}),
+  fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
+  if:(x,y)=>I({type:'app',body:y.body[+!tru(x).body],f:{type:'bool',body:tru(x).body}}),
   bool:tru,
   not:x=>({type:'bool',body:+!tru(x).body}),
-  num:x=>({type:'num',body:''+d(x.body)}),
+  num:x=>({type:'num',body:''+d(x.body.replace(/_/g,'-'))}),
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?0|x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
   rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
   rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))}),
-  and:(x,y)=>({type:'bool',body:tru(x).body&&tru(y).body}),
-  or:(x,y)=>({type:'bool',body:tru(x).body||tru(y).body}),
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
   eval:x=>I(parser.parse(x.body)),
@@ -134,22 +136,25 @@ cm['|:']=cm.round
 cm['+-']=cm.sign
 cm['-']=cm.sub
 cm['|-']=cm.trunc
-cm['=']=cm.cmp
+cm['=']=cm.eq
+cm['>']=cm.gt
+cm['<']=cm.lt
+cm['<=']=cm.lteq
+cm['>=']=cm.gteq
 cm['_']=cm.neg
-cm['>']=cm.map
+cm['->']=cm.map
 cm['__']=cm.len
 cm[':']=cm.get
 cm['><']=cm.join
 cm['<>']=cm.split
 cm['e^']=cm.exp
 cm['?']=cm.if
-cm['!?']=cm.else
 cm['!']=cm.not
 cm[',!']=cm.bool
 cm[',$']=cm.num
+cm[",'"]=cm.str
+cm[',,']=cm.src
 cm['&']=cm.con
-cm['\\/']=cm.and
-cm['/\\']=cm.or
 cm['|']=cm.eval
 cm[',']=cm.app
 
