@@ -17,7 +17,8 @@ fg.defineString('f')
 fg.parse()
 lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+''
 code=fs.readFileSync(fg.get('f'))+''
-ps=peg.generate(lex).parse(code)
+parser=peg.generate(lex)
+ps=parser.parse(code)
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
 form=x=>
@@ -42,10 +43,27 @@ form=x=>
   :x.type=='var'?
     form(x.body)+'\\'+form(x.f)
   :error('failed to format')
+sform=x=>
+  x.type=='num'||x.type=='fn'||x.type=='str'?
+    x.body
+  :x.type=='bool'?
+    x.body?'T':'F'
+  :x.type=='ls'?
+    x.body.map(a=>sform(a)).join` `
+  :x.type=='def'?
+    `@(expr)`
+  :x.map?
+    `(expr)`
+  :x.type=='a'?
+    '#'+x.body
+  :error('failed to format')
 
 cm={
-  out:x=>(console.log(form(x)),x),
-  in:x=>(i=prompt('',0),i?{type:'str',body:i}:{type:'bool',body:0}),
+  os:x=>(console.log(form(x)),x),
+  ol:x=>(console.log(sform(x)),x),
+  wf:(x,y)=>(fs.writeFileSync(x.body,sform(y)),y),
+  rl:x=>(i=prompt('',0),i?{type:'str',body:i}:{type:'bool',body:0}),
+  rf:x=>({type:'str',body:fs.readFileSync(x.body)+''}),
   E:x=>(d.config({precision:0|x.body}),x),
   abs:x=>({type:'num',body:''+d.abs(x.body)}),
   acos:x=>({type:'num',body:''+d.acos(x.body)}),
@@ -71,7 +89,6 @@ cm={
   mod:(x,y)=>({type:'num',body:''+d.mod(x.body,y.body)}),
   mul:(x,y)=>({type:'num',body:''+d.mul(x.body,y.body)}),
   pow:(x,y)=>({type:'num',body:''+d.pow(x.body,y.body)}),
-  rand:x=>({type:'num',body:''+d.random(x.type=='num'?x.body:[]._)}),
   round:x=>({type:'num',body:''+d.round(x.body)}),
   sign:x=>({type:'num',body:''+d.sign(x.body)}),
   sin:x=>({type:'num',body:''+d.sin(x.body)}),
@@ -94,12 +111,15 @@ cm={
   bool:tru,
   not:x=>({type:'bool',body:+!tru(x).body}),
   num:x=>({type:'num',body:''+d(x.body)}),
-  rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?x.body:[]._)}),
+  rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?0|x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
   rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
   rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))}),
   and:(x,y)=>({type:'bool',body:tru(x).body&&tru(y).body}),
-  or:(x,y)=>({type:'bool',body:tru(x).body||tru(y).body})
+  or:(x,y)=>({type:'bool',body:tru(x).body||tru(y).body}),
+  str:x=>({type:'str',body:sform(x)}),
+  src:x=>({type:'str',body:form(x)}),
+  eval:x=>I(parser.parse(x.body))
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -129,6 +149,7 @@ cm[',$']=cm.num
 cm['&']=cm.con
 cm['\\/']=cm.and
 cm['/\\']=cm.or
+cm['|']=cm.eval
 
 vs={}
 
