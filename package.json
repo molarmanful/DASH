@@ -1,6 +1,6 @@
 {
   "name": "dashlang",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "preferGlobal": true,
   "description": "A great leap forward in programming language design.",
   "main": "interpreter.js",
