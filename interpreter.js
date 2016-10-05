@@ -18,7 +18,6 @@ fg.parse()
 lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+''
 code=fs.readFileSync(fg.get('f'))+''
 parser=peg.generate(lex)
-ps=parser.parse(code)
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
 form=x=>
@@ -198,9 +197,11 @@ I=x=>
     vs[x.body]
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
-      cm[z.body].length>1?
-        {type:'pt',body:z.body,f:I(x.f)}
-      :cm[z.body](I(x.f))
+      cm[z.body]?
+        cm[z.body].length>1?
+          {type:'pt',body:z.body,f:I(x.f)}
+        :cm[z.body](I(x.f))
+      :error(`undefined function "${z.body}"`)
     :z.type=='def'?
       I(ua(z,x.f)).body
     :z.type=='pt'?
@@ -213,6 +214,7 @@ I=x=>
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
 
+try{ps=parser.parse(code)}catch(e){error('failed to parse\n'+e.message)}
 try{
   ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
 }catch(e){
@@ -221,6 +223,8 @@ try{
       e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.(.+) `[1]
     :e.message.match`Maximum call stack size exceeded`?
       'infinite recursion'
+    :e.stack.match`peg\\$buildStructuredError`?
+      'failed to parse\n'+e.message
     :e.message
   )
 }
