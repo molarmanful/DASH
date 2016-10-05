@@ -60,7 +60,7 @@ sform=x=>
     `(expr)`
   :x.type=='a'?
     '#'+x.body
-  :error('failed to format')
+  :error('failed to format JSON\n'+x)
 
 cm={
   os:x=>(console.log(form(x)),x),
@@ -180,7 +180,7 @@ vs={
 }
 
 error=e=>{
-  console.log('ERROR: '+e)
+  console.log('\x1b[31mERROR:\x1b[0m '+e)
   process.exit(1)
 }
 
@@ -213,4 +213,14 @@ I=x=>
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
 
-ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
+try{
+  ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
+}catch(e){
+  error(
+    e.message.match`\\[DecimalError\\]`?
+      e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.(.+) `[1]
+    :e.message.match`Maximum call stack size exceeded`?
+      'infinite recursion'
+    :e.message
+  )
+}
