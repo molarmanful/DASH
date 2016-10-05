@@ -22,23 +22,23 @@ get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
 tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
 form=x=>
   x.type=='num'?
-    x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')
+    `\x1b[33m${x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')}\x1b[0m`
   :x.type=='fn'?
-    x.body
+    `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
-    `"${x.body.replace(/"/g,'\\"')}"`
+    `\x1b[32m"${x.body.replace(/"/g,'\\"')}"\x1b[0m`
   :x.type=='bool'?
-    x.body?'T':'F'
+    `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
     `[${x.body.map(a=>form(a)).join`;`}]`
   :x.type=='def'?
-    `@`+form(x.body)
+    `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
     `(${x.map(a=>form(a)).join` `})`
   :x.type=='pt'?
-    x.body+form(x.f)
+    `\x1b[34m${x.body}\x1b[0m`+form(x.f)
   :x.type=='a'||x.type=='ref'?
-    '#'+x.body
+    `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
@@ -214,8 +214,8 @@ I=x=>
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
 
-try{ps=parser.parse(code)}catch(e){error('failed to parse\n'+e.message)}
 try{
+  ps=parser.parse(code)
   ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
 }catch(e){
   error(
