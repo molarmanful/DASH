@@ -102,14 +102,19 @@ cm={
   tanh:x=>({type:'num',body:''+d.tanh(x.body)}),
   trunc:x=>({type:'num',body:''+d.trunc(x.body)}),
   cmp:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)}),
-  eq:(x,y)=>({type:'bool',body:x.body==y.body}),
-  eqs:(x,y)=>({type:'bool',body:x.body===y.body}),
+  eq:(x,y)=>({type:'bool',body:+(x.body==y.body)}),
+  eqs:(x,y)=>({type:'bool',body:+(x.body==y.body&&x.type==y.type)}),
   gt:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)==1}),
   lt:(x,y)=>({type:'bool',body:d(x.body).cmp(y.body)==-1}),
   lteq:(x,y)=>({type:'bool',body:d(x.body).lte(y.body)}),
   gteq:(x,y)=>({type:'bool',body:d(x.body).gte(y.body)}),
   neg:x=>({type:'num',body:''+d(x.body).neg()}),
-  map:(x,y)=>({type:'ls',body:_.map(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
+  map:(x,y)=>({type:'ls',body:_.map(y.body,a=>I({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
+  fold:(x,y)=>_.reduce(y.body,(a,b)=>I({type:'app',body:{type:'app',body:x.body[0],f:b.big?{type:'str',body:b}:b},f:a.big?{type:'str',body:a}:a}),x.body[1]),
+  //tkwl:(x,y)=>({type:'ls',body:_.takeWhile(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
+  //fltr:(x,y)=>({type:'ls',body:_.filter(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
+  //find:(x,y)=>_.find(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body),
+  //ifind:(x,y)=>_.findIndex(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   join:(x,y)=>({type:'str',body:_.map(x.body,a=>sform(a)).join(y.body)}),
@@ -155,6 +160,11 @@ cm['<=']=cm.lteq
 cm['>=']=cm.gteq
 cm['_']=cm.neg
 cm['->']=cm.map
+cm['+>']=cm.fold
+cm['_>']=cm.tkwh
+cm['!>']=cm.fltr
+cm[':>']=cm.find
+cm['$:>']=cm.ifind
 cm['__']=cm.len
 cm[':']=cm.get
 cm['><']=cm.join
@@ -229,7 +239,7 @@ if(F=fg.get('f')){
         'infinite recursion'
       :e.stack.match`peg\\$buildStructuredError`?
         'failed to parse\n'+e.message
-      :e.message
+      :e.stack
     )
   }
 }else{
