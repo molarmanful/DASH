@@ -25,7 +25,7 @@ form=x=>
   :x.type=='fn'?
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
-    `\x1b[32m"${x.body.replace(/"/g,'\\"')}"\x1b[0m`
+    `\x1b[32m"${x.body.replace(/"/g,'\\"').replace(/\x1b\[.+?m/g,'')}"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
@@ -42,7 +42,7 @@ form=x=>
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
     form(x.body)+'\\'+form(x.f)
-  :error('failed to format')
+  :error('failed to format JSON\n'+x)
 sform=x=>
   x.type=='num'?
     x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')
@@ -58,7 +58,9 @@ sform=x=>
     `(expr)`
   :x.type=='a'?
     '#'+x.body
-  :error('failed to format JSON\n'+x)
+  :x.type=='app'?
+    sform(x.body)+' '+sform(x.f)
+  :error('failed to format JSON\n'+JSON.stringify(x))
 
 cm={
   os:x=>(console.log(form(x)),x),
@@ -110,7 +112,7 @@ cm={
   map:(x,y)=>({type:'ls',body:_.map(y.body,a=>({type:'app',body:x,f:a.big?{type:'str',body:a}:a}))}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
-  join:(x,y)=>({type:'str',body:_.map(x.body,a=>a.body).join(y.body)}),
+  join:(x,y)=>({type:'str',body:_.map(x.body,a=>sform(a)).join(y.body)}),
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
   tc:x=>({type:'ls',body:_.map(x.body,a=>({type:'num',body:''+a.codePointAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
