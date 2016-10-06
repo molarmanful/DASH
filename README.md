@@ -1,6 +1,7 @@
 ![DASH](dash.png?raw=true)
 
-[![NPM](https://nodei.co/npm/dashlang.png)](https://npmjs.org/package/dashlang)
+[![NPM](https://nodei.co/npm/dashlang.png?downloads=true)](https://npmjs.org/package/dashlang)
+[![NPM](https://nodei.co/npm-dl/nan.png?months=6&height=3)](https://nodei.co/npm/dashlang/)
 
 Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs? If so, then DASH is for you.
 
