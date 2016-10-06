@@ -18,7 +18,22 @@ fg.defineString('f')
 fg.parse()
 lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+''
 get=(x,y)=>x[d.mod(d(y).cmp(-1)?y:d.add(x.length,y),x.length)]
-tru=x=>x.type=='bool'?x:{type:'bool',body:+!!(x.body&&x.body!=='0'&&x.body.length)}
+tru=x=>(
+  {
+    type:'bool',
+    body:
+      !x?
+        0
+      :x.type=='num'?
+        +(x.body!=0)
+      :x.type=='str'||x.type=='ls'?
+        +!!x.length
+      :x.type=='bool'?
+        x.body
+      :1
+  }
+)
+
 form=x=>
   x.type=='num'?
     `\x1b[33m${x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')}\x1b[0m`
