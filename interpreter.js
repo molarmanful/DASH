@@ -34,6 +34,13 @@ tru=x=>(
   }
 )
 
+function*fib(n=null,y=0,z=1){
+  if(n==0)return y;
+  m=n!=null?n-1:null;
+  yield y;
+  yield*fib(m,z,y+z)
+}
+
 form=x=>
   x.type=='num'?
     `\x1b[33m${x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')}\x1b[0m`
@@ -150,11 +157,12 @@ cm={
   app:(x,y)=>I({type:'app',body:x,f:y}),
   sleep:x=>(slp.usleep(0|x.body),0|x.body),
   arev:x=>(x.rev=1,x),
-  sort:x=>({type:'ls',body:_.sortBy(Array.from(x.body).map(a=>a.big?{type:'str',body:a}:a),a=>a.body)}),
+  sort:x=>({type:'ls',body:_.sortBy(_.map(x.body,a=>a.big?{type:'str',body:a}:a),a=>a.body)}),
   type:x=>({type:'str',body:x.type}),
   sum:x=>({type:'num',body:''+_.reduce(x.body,(a,b)=>d.add(a,b.body),0)}),
   prod:x=>({type:'num',body:''+_.reduce(x.body,(a,b)=>d.mul(a,b.body),1)}),
-  chunk:(x,y)=>({type:'ls',body:x.type=='ls'?_.chunk(x.body,0|y.body).map(a=>({type:'ls',body:a})):x.body.match(RegExp('.'.repeat(_.clamp(y.body,0,x.body.length)),'g')).map(a=>({type:x.type=='str'?'str':'num',body:a}))})
+  chunk:(x,y)=>({type:'ls',body:x.type=='ls'?_.chunk(x.body,0|y.body).map(a=>({type:'ls',body:a})):x.body.match(RegExp('.'.repeat(_.clamp(y.body,0,x.body.length)),'g')).map(a=>({type:x.type=='str'?'str':'num',body:a}))}),
+  fib:x=>({type:'ls',body:[...fib(0|x.body)].map(a=>({type:'num',body:''+a}))})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
