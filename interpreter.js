@@ -147,7 +147,7 @@ cm={
   rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))}),
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
-  eval:x=>I(parser.parse(x.body)),
+  eval:x=>exec(parser.parse(x.body)),
   app:(x,y)=>I({type:'app',body:x,f:y}),
   sleep:x=>(slp.usleep(0|x.body),0|x.body),
   arev:x=>(x.rev=1,x),
