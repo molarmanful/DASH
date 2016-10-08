@@ -62,7 +62,7 @@ form=x=>
 sform=x=>
   x.type=='num'?
     x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')
-  :x.type=='fn'||x.type=='str'?
+  :x.type=='fn'||x.type=='str'||x.type=='a'||x.type=='ref'?
     x.body
   :x.type=='bool'?
     x.body?'T':'F'
@@ -72,8 +72,6 @@ sform=x=>
     `@(expr)`
   :x.map?
     `(expr)`
-  :x.type=='a'?
-    '#'+x.body
   :x.type=='app'?
     sform(x.body)+' '+sform(x.f)
   :error('failed to format JSON\n'+JSON.stringify(x))
@@ -239,7 +237,7 @@ I=x=>
     {type:'ls',body:x.body.map(a=>I(a))}
   :x.type=='var'?
     (vs[x.body.body]=x.f)
-  :x.type=='ref'||x.type=='fn'&&vs[x.body]?
+  :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
     vs[x.body]
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
