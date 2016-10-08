@@ -259,7 +259,7 @@ I=x=>
 
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>{
-  while(!_.isEqual(I(x),x))x=I(x);return x
+  while(!_.isEqual(X=I(x),x))x=X;return x
 }
 
 if(F=fg.get('f')){
