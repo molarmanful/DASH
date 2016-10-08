@@ -12,7 +12,8 @@ prompt=require('prompt-sync')()
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
-  crypto:true
+  crypto:true,
+  modulo:d.EUCLID
 })
 fg.defineBoolean('expr',true)
 fg.defineString('f')
