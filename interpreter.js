@@ -186,7 +186,7 @@ cm['+-']=cm.sign
 cm['-']=cm.sub
 cm['|-']=cm.trunc
 cm['=']=cm.eq
-cm['==']=cm.eq
+cm['==']=cm.eqs
 cm['>']=cm.gt
 cm['<']=cm.lt
 cm['<=']=cm.lteq
