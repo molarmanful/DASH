@@ -128,8 +128,8 @@ cm={
   fold:(x,y)=>_.reduce(y.body,(a,b)=>I({type:'app',body:{type:'app',body:x.body[0],f:b.big?{type:'str',body:b}:b},f:a.big?{type:'str',body:a}:a}),x.body[1]),
   tkwl:(x,y)=>({type:'ls',body:_.takeWhile(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
   fltr:(x,y)=>({type:'ls',body:_.filter(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
-  find:(x,y)=>_.find(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body),
-  ifind:(x,y)=>_.findIndex(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body),
+  find:(x,y)=>({type:'ls',body:_.find(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
+  ifind:(x,y)=>({type:'ls',body:_.findIndex(y.body,a=>tru(I({type:'app',body:x,f:a.big?{type:'str',body:a}:a})).body)}),
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   join:(x,y)=>({type:'str',body:_.map(x.body,a=>sform(a)).join(y.body)}),
@@ -226,11 +226,11 @@ error=e=>{
   process.exit(1)
 }
 
-depth=(x,p=x,y=0)=>(tr(x).map(function(a){
-  a.type=='def'&&(depth(a.body,y++,1),this.stop())
-}),y)
-ua=(x,y)=>tr(x).map(function(a){
-  a.type=='a'&&this.update(a.body==depth(this.parent)?{type:'a',body:++a.body}:y)
+depth=x=>tr(x).reduce(function(a,b){
+  return b&&this.notLeaf&&b.type=='def'?a+1:a
+},0)
+ua=(x,y,z=depth(x))=>tr(x).map(function(a){
+  a.type=='a'&&this.update(a.body==z?y:a)
 })
 
 I=x=>
@@ -269,6 +269,7 @@ if(F=fg.get('f')){
     parser=peg.generate(lex)
     ps=parser.parse(code)
     ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
+    //console.log(JSON.stringify(depth(ps)))
   }catch(e){
     error(
       e.message.match`\\[DecimalError\\]`?
