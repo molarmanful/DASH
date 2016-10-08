@@ -148,11 +148,11 @@ cm={
     [...
       (function*(a,b){
         while(d(a).lt(b)){
-          yield a;
+          yield{type:'num',body:''+a};
           a=''+d.add(a,1)
         }
       })(x.body,y.body)
-    ].map(a=>({type:'num',body:''+a}))}),
+    ]}),
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
   eval:x=>exec(parser.parse(x.body)),
@@ -168,11 +168,11 @@ cm={
     [...
       (function*(n=null,x='0',y='1'){
         while(d(n=d(n).sub(1)+'').gt(0)){
-          yield x;
+          yield{type:'num',body:''+x};
           [x,y]=[y,''+d.add(x,y)]
         }
       })(0|x.body)
-    ].map(a=>({type:'num',body:''+a}))})
+    ]})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
