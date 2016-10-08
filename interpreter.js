@@ -227,9 +227,13 @@ error=e=>{
   process.exit(1)
 }
 
+depth=(x,p=x,y=0)=>(tr(x).map(function(a){
+  a.type=='def'&&(depth(a.body,y++,1),this.stop())
+}),y)
 ua=(x,y)=>tr(x).map(function(a){
-  a.type=='a'&&this.update(a.body?{type:'a',body:--a.body}:y)
+  a.type=='a'&&this.update(a.body==depth(this.parent)?{type:'a',body:++a.body}:y)
 })
+
 I=x=>
   (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     {type:'bool',body:0}
