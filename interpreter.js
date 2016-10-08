@@ -144,7 +144,15 @@ cm={
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?0|x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
   rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
-  rng:(x,y)=>({type:'ls',body:_['range'+(0|x.body>0|y.body?'':'Right')](0|x.body,0|y.body).map(a=>({type:'num',body:a}))}),
+  rng:(x,y)=>({type:'ls',body:
+    [...
+      (function*(a,b){
+        while(d(a).lt(b)){
+          yield a;
+          a=''+d.add(a,1)
+        }
+      })(x.body,y.body)
+    ].map(a=>({type:'num',body:''+a}))}),
   str:x=>({type:'str',body:sform(x)}),
   src:x=>({type:'str',body:form(x)}),
   eval:x=>exec(parser.parse(x.body)),
