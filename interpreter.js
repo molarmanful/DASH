@@ -140,7 +140,7 @@ cm={
   if:(x,y)=>I({type:'app',body:y.body[+!tru(x).body],f:{type:'bool',body:tru(x).body}}),
   bool:tru,
   not:x=>({type:'bool',body:+!tru(x).body}),
-  num:x=>({type:'num',body:''+d(x.body.replace(/_/g,'-'))}),
+  num:x=>({type:'num',body:''+d(x.body.replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?0|x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
   rev:x=>x.body.big?{type:'str',body:[...x.body].reverse().join``}:{type:'ls',body:x.body.reverse()},
@@ -250,7 +250,9 @@ I=x=>
   :x
 
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
-exec=x=>_.isEqual(X=I(x),x)?X:exec(X)
+exec=x=>{
+  while(!_.isEqual(I(x),x))x=I(x);return x
+}
 
 if(F=fg.get('f')){
   try{
@@ -266,7 +268,7 @@ if(F=fg.get('f')){
         'infinite recursion'
       :e.stack.match`peg\\$buildStructuredError`?
         'failed to parse\n'+e.message
-      :e.stack
+      :'js error -> '+e.stack
     )
   }
 }else{
