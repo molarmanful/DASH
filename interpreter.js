@@ -231,7 +231,9 @@ ua=(x,y)=>tr(x).map(function(a){
   a.type=='a'&&this.update(a.body?{type:'a',body:--a.body}:y)
 })
 I=x=>
-  x.map?
+  (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
+    {type:'bool',body:0}
+  :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
     {type:'ls',body:x.body.map(a=>I(a))}
@@ -243,16 +245,14 @@ I=x=>
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
         cm[z.body].length>1?
-          {type:'pt',body:z.body,f:I(x.f),rev:z.rev}
+          {type:'pt',body:z.body,f:x.f,rev:z.rev}
         :cm[z.body](I(x.f))
       :error(`undefined function "${z.body}"`)
     :z.type=='def'?
       I(ua(z,x.f)).body
     :z.type=='pt'?
-      z.rev?cm[I(z).body](x.f,I(z.f)):cm[I(z).body](z.f,I(x.f))
+      z.rev?cm[I(z).body](I(x.f),I(z.f)):cm[I(z).body](I(z.f),I(x.f))
     :x
-  :(x.type=='num'&&x.body=='NaN')||x===[]._?
-    {type:'bool',body:0}
   :x
 
 //In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
