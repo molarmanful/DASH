@@ -27,7 +27,7 @@ num=a:([0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'.'[0-9]+('e''_'?[0-9]+)?){
   var f
   return{
     type:'num',
-    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``)(a)
+    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
   }
 }
 

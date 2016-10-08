@@ -11,7 +11,8 @@ slp=require('sleep')
 prompt=require('prompt-sync')()
 d.config({
   toExpNeg:-9e15,
-  toExpPos:9e15
+  toExpPos:9e15,
+  crypto:true
 })
 fg.defineBoolean('expr',true)
 fg.defineString('f')
@@ -33,13 +34,6 @@ tru=x=>(
       :1
   }
 )
-
-function*fib(n=null,y=0,z=1){
-  if(n==0)return y;
-  m=n!=null?n-1:null;
-  yield y;
-  yield*fib(m,z,y+z)
-}
 
 form=x=>
   x.type=='num'?
@@ -162,7 +156,15 @@ cm={
   sum:x=>({type:'num',body:''+_.reduce(x.body,(a,b)=>d.add(a,b.body),0)}),
   prod:x=>({type:'num',body:''+_.reduce(x.body,(a,b)=>d.mul(a,b.body),1)}),
   chunk:(x,y)=>({type:'ls',body:x.type=='ls'?_.chunk(x.body,0|y.body).map(a=>({type:'ls',body:a})):x.body.match(RegExp('.'.repeat(_.clamp(y.body,0,x.body.length)),'g')).map(a=>({type:x.type=='str'?'str':'num',body:a}))}),
-  fib:x=>({type:'ls',body:[...fib(0|x.body)].map(a=>({type:'num',body:''+a}))})
+  fib:x=>({type:'ls',body:
+    [...
+      (function*(n=null,x='0',y='1'){
+        while(d(n=d(n).sub(1)+'').gt(0)){
+          yield x;
+          [x,y]=[y,''+d.add(x,y)]
+        }
+      })(0|x.body)
+    ].map(a=>({type:'num',body:''+a}))})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
