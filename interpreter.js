@@ -136,7 +136,6 @@ cm={
   split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
   tc:x=>({type:'ls',body:_.map(x.body,a=>({type:'num',body:''+a.codePointAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
-  if:(x,y)=>I({type:'app',body:y.body[+!tru(x).body],f:{type:'bool',body:tru(x).body}}),
   bool:tru,
   not:x=>({type:'bool',body:+!tru(x).body}),
   num:x=>({type:'num',body:''+d(x.body.replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
@@ -206,7 +205,6 @@ cm['><']=cm.join
 cm['<>']=cm.split
 cm['<|>']=cm.chunk
 cm['e^']=cm.exp
-cm['?']=cm.if
 cm['!']=cm.not
 cm[',!']=cm.bool
 cm[',$']=cm.num
@@ -238,6 +236,8 @@ ua=(x,y,z=depth(x))=>tr(x).map(function(a){
 I=x=>
   (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     {type:'bool',body:0}
+  :x.type=='cond'?
+    tru(x.body).body?I(x.f):I(x.g)
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?

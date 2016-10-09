@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/num/bool/ls/var/aapp/app/def/arg/fn/a/ref
+type=str/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -65,7 +65,7 @@ ref=a:('#'fn){
 }
 
 //function reference
-fn=a:[^ \n;0-9".[\]\\()@#TF]+{
+fn=a:[^ \n;0-9".[\]\\()@#TF?]+{
   return{
     type:'fn',
     body:a.join``
@@ -98,5 +98,15 @@ var=a:fn _*'\\'_*b:type{
     type:'var',
     body:a,
     f:b
+  }
+}
+
+//conditionals
+cond='['_*a:type _*'?'_*b:type? _*'?'_*c:type? _*']'{
+  return{
+  	type:'cond',
+    body:a,
+    f:b||{type:'bool',body:1},
+    g:c||{type:'bool',body:0}
   }
 }
