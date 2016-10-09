@@ -102,11 +102,11 @@ var=a:fn _*'\\'_*b:type{
 }
 
 //conditionals
-cond='['_*a:type _*'?'_*b:type? _*'?'_*c:type? _*']'{
+cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'{
   return{
   	type:'cond',
     body:a,
-    f:b||{type:'bool',body:1},
-    g:c||{type:'bool',body:0}
+    f:(b&&b.length)?b:{type:'bool',body:1},
+    g:(c&&c.length)?c:{type:'bool',body:0}
   }
 }

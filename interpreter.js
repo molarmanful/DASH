@@ -50,7 +50,7 @@ form=x=>
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
-    `(${x.map(a=>form(a)).join` `})`
+    `(${x.map(a=>form(a)).join`;`})`
   :x.type=='pt'?
     `\x1b[34m${x.body}\x1b[0m`+form(x.f)
   :x.type=='a'||x.type=='ref'?
@@ -59,6 +59,8 @@ form=x=>
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
     form(x.body)+'\\'+form(x.f)
+  :x.type=='cond'?
+    `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
   :error('failed to format JSON\n'+x)
 sform=x=>
   x.type=='num'?
@@ -75,6 +77,8 @@ sform=x=>
     `(expr)`
   :x.type=='app'?
     sform(x.body)+' '+sform(x.f)
+  :x.type=='cond'?
+    '[cond]'
   :error('failed to format JSON\n'+JSON.stringify(x))
 
 cm={
