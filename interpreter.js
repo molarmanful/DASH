@@ -229,7 +229,7 @@ error=e=>{
 }
 
 depth=x=>tr(x).reduce(function(a,b){
-  return b&&this.notLeaf&&b.type=='def'?a+1:a
+  return b&&b.type=='def'?a+1:a
 },0)
 ua=(x,y,z=depth(x))=>tr(x).map(function(a){
   a.type=='a'&&this.update(a.body==z?y:a)
