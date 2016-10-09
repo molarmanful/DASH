@@ -171,7 +171,9 @@ cm={
           [x,y]=[y,''+d.add(x,y)]
         }
       })(0|x.body)
-    ]})
+    ]}),
+  K:(x,y)=>x,
+  I:x=>x
 }
 cm['||']=cm.abs
 cm['+']=cm.add
@@ -248,13 +250,13 @@ I=x=>
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
         cm[z.body].length>1?
-          {type:'pt',body:z.body,f:x.f,rev:z.rev}
+          {type:'pt',body:z.body,f:I(x.f),rev:z.rev}
         :cm[z.body](I(x.f))
       :error(`undefined function "${z.body}"`)
     :z.type=='def'?
       I(ua(z,x.f)).body
     :z.type=='pt'?
-      z.rev?cm[I(z).body](I(x.f),I(z.f)):cm[I(z).body](I(z.f),I(x.f))
+      z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :x
   :x
 
