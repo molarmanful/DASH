@@ -230,12 +230,13 @@ error=e=>{
   process.exit(1)
 }
 
-depth=x=>tr(x).reduce(function(a,b){
-  return b&&b.type=='def'?a+1:a
-},0)
-ua=(x,y,z=depth(x))=>tr(x).map(function(a){
-  a.type=='a'&&this.update(a.body==z?y:a)
-})
+ua=(x,y)=>(X=tr(x),X.map(function(a){
+  a.type=='a'&&this.update(
+    a.body==this.path.filter(($,i,j)=>X.get(j.slice(0,i+1)).type=='def').length?
+      y
+    :a
+  )
+}))
 
 I=x=>
   (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
@@ -275,7 +276,6 @@ if(F=fg.get('f')){
     parser=peg.generate(lex)
     ps=parser.parse(code)
     ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
-    //console.log(JSON.stringify(depth(ps)))
   }catch(e){
     error(
       e.message.match`\\[DecimalError\\]`?
