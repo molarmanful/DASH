@@ -61,7 +61,7 @@ form=x=>
     form(x.body)+'\\'+form(x.f)
   :x.type=='cond'?
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
-  :error('failed to format JSON\n'+x)
+  :error('failed to format JSON\n'+JSON.stringify(x))
 sform=x=>
   x.type=='num'?
     x.body.replace(/Infinity/g,'oo').replace(/-/g,'_')
@@ -80,6 +80,7 @@ sform=x=>
   :x.type=='cond'?
     '[cond]'
   :error('failed to format JSON\n'+JSON.stringify(x))
+rgx=x=>RegExp(...x.body.big?[x.body]:x.body.map(x=>x.body))
 
 cm={
   os:x=>(console.log(form(x)),x),
@@ -137,7 +138,7 @@ cm={
   len:x=>({type:'num',body:x.body.length}),
   get:(x,y)=>y.type=='ls'?{type:'ls',body:y.body.map(a=>get(x.body,a.body))}:x.body.big?{type:'str',body:get(x.body,y.body)}:get(x.body,y.body),
   join:(x,y)=>({type:'str',body:_.map(x.body,a=>sform(a)).join(y.body)}),
-  split:(x,y)=>({type:'ls',body:x.body.split(y.body).map(a=>({type:'str',body:a}))}),
+  split:(x,y)=>({type:'ls',body:x.body.split(rgx(x)).map(a=>({type:'str',body:a}))}),
   tc:x=>({type:'ls',body:_.map(x.body,a=>({type:'num',body:''+a.codePointAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
   bool:tru,
@@ -180,6 +181,14 @@ cm={
   or:(x,y)=>({type:'bool',body:tru(x.body).body||tru(y.body).body}),
   xor:(x,y)=>({type:'bool',body:+(tru(x.body).body!=tru(y.body).body)}),
   not:x=>({type:'bool',body:+!tru(x).body}),
+  mstr:(x,y)=>({type:'ls',body:(y.body.match(rgx(x))||[]).map(a=>({type:'str',body:a}))}),
+  xstr:(x,y)=>({type:'ls',body:(rgx(x).exec(y.body)||[]).map(a=>({type:'str',body:a}))}),
+  rstr:(x,y)=>({type:'str',body:y.body.replace(rgx(x.body[0]),
+    (a,...b)=>sform(I({
+      type:'app',
+      body:x.body[1],
+      f:I([a].concat(b.slice(0,-2)).map(i=>({type:'str',body:i||''})))
+    })))})
 }
 cm['||']=cm.abs
 cm['+']=cm.add
