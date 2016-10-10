@@ -231,10 +231,16 @@ error=e=>{
 }
 
 ua=(x,y)=>(X=tr(x),X.map(function(a){
-  a.type=='a'&&this.update(
-    a.body==this.path.filter(($,i,j)=>X.get(j.slice(0,i+1)).type=='def').length?
-      y
-    :a
+  a.type=='a'&&(
+    a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
+      this.update(
+        tr(y).map(function(b){
+          b.type=='a'&&b.body>this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length&&this.update(
+            (b.body+=D,b)
+          )
+        })
+      )
+    :a.body>D?(a.body-=1,a):a
   )
 }))
 
@@ -259,7 +265,7 @@ I=x=>
         :cm[z.body](I(x.f))
       :error(`undefined function "${z.body}"`)
     :z.type=='def'?
-      I(ua(z,x.f)).body
+      ua(z,x.f).body
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :x
