@@ -141,7 +141,6 @@ cm={
   tc:x=>({type:'ls',body:_.map(x.body,a=>({type:'num',body:''+a.codePointAt()}))}),
   fc:x=>({type:'str',body:x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)}),
   bool:tru,
-  not:x=>({type:'bool',body:+!tru(x).body}),
   num:x=>({type:'num',body:''+d(x.body.replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
   rnd:x=>({type:'num',body:''+d.random(x&&x.body&&0|x.body?0|x.body:[]._)}),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?{type:'str',body:form(x)+form(y)}:{type:'ls',body:_.concat(x.type=='ls'?x.body:x,y.type=='ls'?y.body:y)},
@@ -176,7 +175,11 @@ cm={
       })(0|x.body)
     ]}),
   K:(x,y)=>x,
-  I:x=>x
+  I:x=>x,
+  and:(x,y)=>({type:'bool',body:tru(x.body).body&&tru(y.body).body}),
+  or:(x,y)=>({type:'bool',body:tru(x.body).body||tru(y.body).body}),
+  xor:(x,y)=>({type:'bool',body:+(tru(x.body).body!=tru(y.body).body)}),
+  not:x=>({type:'bool',body:+!tru(x).body}),
 }
 cm['||']=cm.abs
 cm['+']=cm.add
