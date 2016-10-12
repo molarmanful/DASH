@@ -64,7 +64,7 @@ form=x=>
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
-    `(${x.map(a=>form(a)).join(';')})`
+    `(${x.map(form).join`;`})`
   :x.type=='pt'?
     `\x1b[34m${x.body}\x1b[0m`+form(x.f)
   :x.type=='a'||x.type=='ref'?
@@ -148,7 +148,7 @@ cm={
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,a))).body)),
   find:(x,y)=>ls(y.body.find(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>x.body.get(y),
+  get:(x,y)=>x.body.get(d.mod(''+y.body,len(x))),
   join:(x,y)=>str(x.body.join(sform(y.body))),
   split:(x,y)=>ls(x.body.split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
