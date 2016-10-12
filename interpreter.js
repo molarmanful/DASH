@@ -48,7 +48,7 @@ pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
-rgx=x=>RegExp(...x.body.charAt?[x.body]:x.body.map(x=>x.body)),
+rgx=x=>RegExp(...x.body.charAt?[''+x.body]:x.body.map(a=>''+a.body).value()),
 
 form=x=>
   x.type=='num'?
@@ -149,7 +149,7 @@ cm={
   find:(x,y)=>ls(y.body.find(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>x.body.get(d.mod(''+y.body,len(x))),
-  join:(x,y)=>str(x.body.join(sform(y.body))),
+  join:(x,y)=>str(x.body.map(sform).join(''+y.body)),
   split:(x,y)=>ls(x.body.split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)),
@@ -178,7 +178,7 @@ cm={
   xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
   not:x=>tru(+!tru(x).body),
   mstr:(x,y)=>ls((y.body.match(rgx(x))||[]).map(str)),
-  xstr:(x,y)=>ls((rgx(x).exec(y.body+'')||[]).map(str)),
+  xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
   rstr:(x,y)=>str((y.body+'').replace(rgx(x.body[0]),(a,...b)=>sform(I(app(x.body[1],I([a].concat(b.slice(0,-2)).map(i=>str(i||''))))))))
 }
 
