@@ -143,7 +143,7 @@ cm={
   gteq:(x,y)=>tru(+d(''+x.body).gte(''+y.body)),
   neg:x=>num(d(x.body).neg()),
   map:(x,y)=>ls(y.body.map(a=>I(app(x,a)))),
-  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body[0],b),a)),x.body[1]),
+  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
   tkwl:(x,y)=>ls(y.body.takeWhile(a=>tru(I(app(x,a))).body)),
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,a))).body)),
   find:(x,y)=>ls(y.body.find(a=>tru(I(app(x,a))).body)),
