@@ -157,7 +157,7 @@ cm={
   num:x=>num(x.body),
   rnd:x=>num(d.random(x&&x.body&&0|x.body?0|x.body:[]._)),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
-  rev:x=>x.body.reverse(),
+  rev:x=>ls(x.body.reverse().map(str)),
   rng:(x,y)=>ls(l.range(0|x.body,0|y.body).map(a=>num(a))),
   str:x=>str(sform(x.body)),
   src:x=>str(form(x)),
@@ -166,6 +166,7 @@ cm={
   sleep:x=>(slp.usleep(0|x.body),x),
   T:x=>(x.rev=1,x),
   sort:x=>ls(x.body.map(a=>a.charAt?str(a):a).sortBy(a=>a.body)),
+  shuf:x=>ls(x.body.shuffle().map(str)),
   type:x=>str(x.type),
   sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+b.body),0)),
   prod:x=>num(x.body.reduce((a,b)=>d.mul(a,''+b.body),1)),
@@ -240,7 +241,6 @@ I=x=>
     :x
   :x,
 
-//In=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||(a.type=='fn'&&vs[a.body])||a.type=='ref')
 exec=x=>{
   while(form(X=I(x))!=form(x))x=X;return x
 }
