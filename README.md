@@ -11,5 +11,7 @@ DASH is a general-purpose functional programming language influenced by countles
 For installation/docs, visit the [wiki](https://github.com/molarmanful/DASH/wiki).
 
 #Features
+- Functional
 - Lazily evaluated
 - Implements a zero-indexed version of de Bruijn indices
+- Mainly prefix-based

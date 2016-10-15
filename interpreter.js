@@ -58,7 +58,7 @@ pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
-rgx=x=>RegExp(...x.body.charAt?[''+x.body]:x.body.map(a=>''+a.body).value()),
+rgx=x=>x.type=='rgx'?x.body:''+x.body,
 
 form=x=>
   x.type=='num'?
@@ -85,6 +85,8 @@ form=x=>
     form(x.body)+'\\'+form(x.f)
   :x.type=='cond'?
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
+  :x.type=='rgx'?
+    `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
   :error('failed to format JSON\n'+JSON.stringify(x)),
 sform=x=>
   x.type=='num'?
@@ -103,6 +105,8 @@ sform=x=>
     sform(x.body)+' '+sform(x.f)
   :x.type=='cond'?
     '[cond]'
+  :x.type=='rgx'?
+    '[rgx]'
   :error('failed to format JSON\n'+JSON.stringify(x)),
 
 cm={
@@ -126,7 +130,7 @@ cm={
   cosh:(x,y)=>num(d.cosh(''+x.body)),
   div:(x,y)=>num(d.div(''+x.body,''+y.body)),
   exp:x=>num(d.exp(''+x.body)),
-  floor:x=>num(d.floor(''+x.body)),
+  flr:x=>num(d.floor(''+x.body)),
   hypot:(x,y)=>num(d.hypot(''+x.body,''+y.body)),
   ln:x=>num(d.ln(''+x.body)),
   lt:x=>num(d.log10(''+x.body)),
@@ -160,7 +164,7 @@ cm={
   len:x=>num(len(x)),
   get:(x,y)=>x.body.get(d.mod(''+y.body,len(x))),
   join:(x,y)=>str(x.body.map(sform).join(''+y.body)),
-  split:(x,y)=>ls(x.body.split(rgx(x)).map(str)),
+  split:(x,y)=>ls((''+y.body).split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)),
   bool:tru,
@@ -176,11 +180,11 @@ cm={
   sleep:x=>(slp.usleep(0|x.body),x),
   T:x=>(x.rev=1,x),
   sort:x=>ls(x.body.map(a=>a.charAt?str(a):a).sortBy(a=>a.body)),
-  shuf:x=>ls(x.body.shuffle().map(str)),
+  shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
   type:x=>str(x.type),
   sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+b.body),0)),
   prod:x=>num(x.body.reduce((a,b)=>d.mul(a,''+b.body),1)),
-  chunk:(x,y)=>ls(x.body.chunk(0|y.body)),
+  chunk:(x,y)=>ls(x.body.charAt?x.body.chunk(0|y.body).map(a=>str(a.join``)):x.body.chunk(0|y.body).map(ls)),
   K:(x,y)=>x,
   I:x=>x,
   and:(x,y)=>tru(tru(x).body&&tru(y).body),
@@ -189,8 +193,47 @@ cm={
   not:x=>tru(+!tru(x).body),
   mstr:(x,y)=>ls((y.body.match(rgx(x))||[]).map(str)),
   xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
-  rstr:(x,y)=>str((y.body+'').replace(rgx(x.body[0]),(a,...b)=>sform(I(app(x.body[1],I([a].concat(b.slice(0,-2)).map(i=>str(i||''))))))))
-}
+  rstr:(x,y)=>str((y.body+'').replace(rgx(x),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
+  R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)})
+};
+
+[
+  ['+','add'],
+  ['|^','ceil'],
+  ['/','div'],
+  ['e^','exp'],
+  ['|_','flr'],
+  ['%','mod'],
+  ['*','mul'],
+  ['^','pow'],
+  ['|=','round'],
+  ['+-','sign'],
+  ['-','sub'],
+  ['|-','trunc'],
+  ['=','eq'],
+  ['==','eqs'],
+  ['>','gt'],
+  ['<','lt'],
+  ['>=','gteq'],
+  ['<=','lteq'],
+  ['_','neg'],
+  ['->','map'],
+  ['+>','fold'],
+  ['_>','tkwl'],
+  ['!>','fltr'],
+  [':>','find'],
+  [':','get'],
+  ['><','join'],
+  ['<>','split'],
+  ['++','con'],
+  ['$$','eval'],
+  ['%%','sleep'],
+  ['<|>','chunk'],
+  ['&','and'],
+  ['|','or'],
+  ['$','xor'],
+  ['!','not']
+].map(a=>cm[a[0]]=cm[a[1]])
 
 const vs={
   pi:num('3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562863882353787593751957781857780532171226806613001927876611195909216420199'),
