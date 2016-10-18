@@ -193,7 +193,7 @@ cm={
   not:x=>tru(+!tru(x).body),
   mstr:(x,y)=>ls((y.body.match(rgx(x))||[]).map(str)),
   xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
-  rstr:(x,y)=>str((y.body+'').replace(rgx(x),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
+  rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
   R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)})
 };
 
@@ -257,7 +257,7 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
           )
         })
       )
-    :a.body>D?(a.body-=1,a):a
+    :a.body>D?(a.body--,a):a
   )
 })),
 
