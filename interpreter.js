@@ -172,7 +172,7 @@ cm={
   num:x=>num(x.body),
   rnd:x=>num(d.random(x&&x.body&&0|x.body?0|x.body:[]._)),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
-  rev:x=>ls(x.body.reverse().map(str)),
+  rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),
   src:x=>str(form(x)),
