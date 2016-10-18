@@ -173,7 +173,7 @@ cm={
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
   rev:x=>ls(x.body.reverse().map(str)),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
-  str:x=>str(sform(x.body)),
+  str:x=>str(sform(x)),
   src:x=>str(form(x)),
   eval:x=>exec(parser.parse(x.body)),
   S:(x,y)=>I(app(x,y)),
