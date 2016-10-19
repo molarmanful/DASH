@@ -170,7 +170,7 @@ cm={
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join``:String.fromCodePoint(0|x.body)),
   bool:tru,
   num:x=>num(x.body),
-  rnd:x=>num(d.random(x&&x.body&&0|x.body?0|x.body:[]._)),
+  rnd:x=>num(d.random(0|x.body)),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
@@ -265,7 +265,7 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
 
 I=x=>
   (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
-    bool(0)
+    tru(0)
   :x.type=='cond'?
     tru(x.body).body?I(x.f):I(x.g)
   :x.map?
