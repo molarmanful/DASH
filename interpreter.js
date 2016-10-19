@@ -195,7 +195,8 @@ cm={
   mstr:(x,y)=>ls((y.body.match(rgx(x))||[]).map(str)),
   xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
   rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
-  R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)})
+  R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
+  var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y)
 };
 
 [
@@ -293,7 +294,9 @@ I=x=>
       ua(z,x.f).body
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
-    :x
+    :z.type=='ls'?
+      ls(z.body.map(a=>I(app(a,x.f))))
+    :error('bad application to '+form(z))
   :x,
 
 exec=x=>{
