@@ -163,7 +163,7 @@ cm={
   foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
   tkwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
   fltr:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).filter(a=>tru(I(app(x,a))).body)),
-  find:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).find(a=>tru(I(app(x,a))).body)),
+  find:(x,y)=>y.body.map(a=>y.type=='str'?str(a):a).find(a=>tru(I(app(x,a))).body),
   len:x=>num(len(x)),
   get:(x,y)=>x.body.get(d.mod(''+y.body,len(x))),
   join:(x,y)=>str(y.body.map(sform).join(''+x.body)),
