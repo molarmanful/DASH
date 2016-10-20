@@ -76,7 +76,7 @@ form=x=>
   :x.map?
     `(${x.map(form).join`;`})`
   :x.type=='pt'?
-    `\x1b[34m${x.body}\x1b[0m`+form(x.f)
+    `\x1b[34m${x.body}\x1b[0m `+form(x.f)
   :x.type=='a'||x.type=='ref'?
     `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='app'?
@@ -103,6 +103,8 @@ sform=x=>
     `(expr)`
   :x.type=='app'?
     sform(x.body)+' '+sform(x.f)
+  :x.type=='pt'?
+    x.body+' '+sform(x.f)
   :x.type=='cond'?
     '[cond]'
   :x.type=='rgx'?
@@ -156,12 +158,12 @@ cm={
   lteq:(x,y)=>tru(+d(''+x.body).lte(''+y.body)),
   gteq:(x,y)=>tru(+d(''+x.body).gte(''+y.body)),
   neg:x=>num(d(x.body).neg()),
-  map:(x,y)=>ls(y.body.map(a=>I(app(x,a))).map(a=>y.type=='str'?str(a):a)),
+  map:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map(a=>I(app(x,a)))),
   fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
   foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
-  tkwl:(x,y)=>ls(y.body.takeWhile(a=>tru(I(app(x,a))).body)),
-  fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,a))).body)),
-  find:(x,y)=>ls(y.body.find(a=>tru(I(app(x,a))).body)),
+  tkwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
+  fltr:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).filter(a=>tru(I(app(x,a))).body)),
+  find:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).find(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>x.body.get(d.mod(''+y.body,len(x))),
   join:(x,y)=>str(y.body.map(sform).join(''+x.body)),
@@ -299,9 +301,7 @@ I=x=>
     :error('bad application to '+form(z))
   :x,
 
-exec=x=>{
-  while(form(X=I(x))!=form(x))x=X;return x
-}
+exec=x=>form(X=I(x))!=form(x)?exec(X):x
 
 if(F=fg.get('f')){
   try{
