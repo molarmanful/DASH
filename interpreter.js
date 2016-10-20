@@ -270,7 +270,7 @@ I=x=>
   (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     tru(0)
   :x.type=='cond'?
-    tru(x.body).body?I(x.f):I(x.g)
+    tru(I(x.body)).body?I(x.f):I(x.g)
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
