@@ -70,7 +70,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(a=>form(a)).join(';'):x.body.take(3).map(a=>form(a)).join(';')+';...'}]`
+    `[${isFinite(len(x))?x.body.map(a=>form(I(a))).join(';'):x.body.take(3).map(a=>form(I(a))).join(';')+';...'}]`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -198,7 +198,9 @@ cm={
   xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
   rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
   R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
-  var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y)
+  var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
+  tk:(x,y)=>ls(y.body.take(0|x.body)),
+  gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0))
 };
 
 [
@@ -274,7 +276,7 @@ I=x=>
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
-    ls(l(x.body).map(a=>I(a)))
+    ls(l(x.body))
   :x.type=='str'?
     str(l(x.body))
   :x.type=='num'?
@@ -301,7 +303,7 @@ I=x=>
     :error('bad application to '+form(z))
   :x,
 
-exec=x=>form(X=I(x))!=form(x)?exec(X):x
+exec=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||a.type=='cond')?exec(I(x)):x
 
 if(F=fg.get('f')){
   try{
