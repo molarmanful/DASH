@@ -199,7 +199,7 @@ cm={
   rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
   R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
-  tk:(x,y)=>ls(y.body.take(0|x.body)),
+  tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0))
 };
 
