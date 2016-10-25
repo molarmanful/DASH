@@ -172,7 +172,7 @@ cm={
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join(''):String.fromCodePoint(0|x.body)),
   bool:tru,
   num:x=>num(x.body),
-  rnd:x=>num(d.random(0|x.body)),
+  rnd:x=>num(0|x.body?d.random(0|x.body):''+0|d.random()*2),
   con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
@@ -319,7 +319,7 @@ if(F=fg.get('f')){
   }catch(e){
     error(
       e.message.match`\\[DecimalError\\]`?
-        e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.(.+) `[1]
+        e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \n;0-9".[\]\\()@#TF?]+) `[1]
       :e.message.match`Maximum call stack size exceeded`?
         'too much recursion'
       :e.stack.match`peg\\$buildStructuredError`?
