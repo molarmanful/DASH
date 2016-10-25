@@ -287,9 +287,7 @@ I=x=>
   :x.type=='num'?
     num(l(x.body))
   :x.type=='var'?
-    vs[x.body.body]?
-      vs[x.body.body]
-    :(vs[x.body.body]=x.f)
+    (vs[x.body.body]=x.f)
   :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
     vs[x.body]
   :x.type=='app'?
