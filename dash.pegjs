@@ -65,7 +65,7 @@ ref=a:('#'fn){
 }
 
 //function reference
-fn=a:[^ \n;0-9".[\]\\()@#TF?]+{
+fn=a:[^ \n;0-9".[\]\\(){}@#TF?]+{
   return{
     type:'fn',
     body:a.join``
@@ -106,7 +106,7 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'{
   return{
   	type:'cond',
     body:a,
-    f:(b&&b.length)?b:{type:'bool',body:1},
-    g:(c&&c.length)?c:{type:'bool',body:0}
+    f:b&&b.length?b:{type:'bool',body:1},
+    g:c&&c.length?c:{type:'bool',body:0}
   }
 }
