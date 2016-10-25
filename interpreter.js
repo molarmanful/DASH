@@ -319,7 +319,7 @@ if(F=fg.get('f')){
   }catch(e){
     error(
       e.message.match`\\[DecimalError\\]`?
-        e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \n;0-9".[\]\\()@#TF?]+) `[1]
+        e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \\n;0-9".[\\]\\()@#TF?]+) `[1]
       :e.message.match`Maximum call stack size exceeded`?
         'too much recursion'
       :e.stack.match`peg\\$buildStructuredError`?
