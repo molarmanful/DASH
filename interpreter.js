@@ -300,7 +300,7 @@ I=x=>
         :cm[z.body](I(x.f))
       :error(`undefined function "${z.body}"`)
     :z.type=='def'?
-      ua(z,x.f).body
+      I(ua(z,x.f).body)
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='ls'?
