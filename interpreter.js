@@ -200,7 +200,11 @@ cm={
   R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
-  gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0))
+  gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),
+  int:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
+  uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
+  unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
+  diff:x=>ls(x.body.difference().map(a=>a.charAt?str(a):a))
 };
 
 [
