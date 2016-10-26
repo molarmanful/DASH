@@ -190,7 +190,7 @@ cm={
   type:x=>str(x.type),
   sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+b.body),0)),
   prod:x=>num(x.body.reduce((a,b)=>d.mul(a,''+b.body),1)),
-  chunk:(x,y)=>ls(x.body.charAt?x.body.chunk(0|y.body).map(a=>str(a.join``)):x.body.chunk(0|y.body).map(ls)),
+  chunk:(x,y)=>ls(y.body.charAt?y.body.chunk(0|x.body).map(a=>str(a.join``)):y.body.chunk(0|x.body).map(ls)),
   K:(x,y)=>x,
   I:x=>x,
   and:(x,y)=>tru(tru(x).body&&tru(y).body),
