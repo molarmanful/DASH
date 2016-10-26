@@ -183,7 +183,7 @@ cm={
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),
   src:x=>str(form(x)),
-  eval:x=>exec(parser.parse(''+x.body)),
+  eval:x=>parser.parse(''+x.body),
   S:(x,y)=>I(app(x,y)),
   sleep:x=>(slp.usleep(0|x.body),x),
   tt:x=>(x.rev=1,x),
