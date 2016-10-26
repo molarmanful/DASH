@@ -9,6 +9,7 @@ d=require('decimal.js'),
 tr=require('traverse'),
 P=require('path'),
 slp=require('sleep'),
+repl=require('repl')
 prompt=require('prompt-sync')()
 d.config({
   toExpNeg:-9e15,
@@ -19,9 +20,9 @@ d.config({
 fg.defineBoolean('expr',true)
 fg.defineString('f')
 fg.parse()
-repl=require('repl')
 
 const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
+parser=peg.generate(lex)
 
 len=x=>
   x.body?
@@ -170,14 +171,14 @@ cm={
   len:x=>num(len(x)),
   get:(x,y)=>y.body.map(a=>a.charAt?str(a):a).get(d.mod(''+x.body,len(y))),
   set:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-1-d.mod(''+x.body.get(0).body,len(y)))))),
-  join:(x,y)=>str(y.body.map(sform).join(sform(x.body))),
+  join:(x,y)=>str(y.body.map(sform).join(sform(x))),
   split:(x,y)=>ls(l(''+y.body).split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join(''):String.fromCodePoint(0|x.body)),
   bool:tru,
   num:x=>num(x.body),
   rnd:x=>num(0|x.body?d.random(0|x.body):''+0|d.random()*2),
-  con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(form(x)+form(y)):ls(x.concat(y.body)),
+  con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(sform(x)+sform(y)):ls(x.concat(y.body)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),
@@ -332,7 +333,6 @@ ERR=e=>
 if(F=fg.get('f')){
   try{
     const code=fs.readFileSync(F)+'',
-    parser=peg.generate(lex),
     ps=parser.parse(code)
     ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
   }catch(e){
@@ -346,7 +346,6 @@ if(F=fg.get('f')){
     prompt:'DASH > ',
     eval:(a)=>{
       try{
-        parser=peg.generate(lex)
         console.log(form(exec(parser.parse(a))))
       }catch(e){
         erro(ERR(e))

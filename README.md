@@ -17,3 +17,40 @@ For installation/docs, visit the [wiki](https://github.com/molarmanful/DASH/wiki
 - Mainly prefix-based
 - Float support for up to 1000-digit precision
 - Easy installation via Node.js and NPM
+
+#Examples
+"Hello, world!":
+```
+"Hello, world!"
+```
+
+Fibonacci sequence:
+```
+(map
+  f \ @[
+    > #0 1
+      ? (+ f - #0 1) f - #0 2
+      ? 1
+  ]
+) rng 0 10
+```
+
+FizzBuzz:
+```
+(join "
+") (map @
+  [
+    and % #0 3 % #0 5
+      ? #0
+      ? ++ [
+          % #0 3
+            ? ""
+            ? "fizz"
+        ] [
+          % #0 5
+            ? ""
+            ? "buzz"
+        ]
+  ]
+) rng 1 101
+```

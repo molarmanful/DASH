@@ -106,7 +106,7 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'{
   return{
   	type:'cond',
     body:a,
-    f:b&&b.length?b:{type:'bool',body:1},
-    g:c&&c.length?c:{type:'bool',body:0}
+    f:b&&b.length?b.filter(x=>!x.big):{type:'bool',body:1},
+    g:c&&c.length?c.filter(x=>!x.big):{type:'bool',body:0}
   }
 }
