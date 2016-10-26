@@ -169,7 +169,7 @@ cm={
   len:x=>num(len(x)),
   get:(x,y)=>y.body.map(a=>a.charAt?str(a):a).get(d.mod(''+x.body,len(y))),
   set:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-1-d.mod(''+x.body.get(0).body,len(y)))))),
-  join:(x,y)=>str(y.body.map(sform).join(''+x.body)),
+  join:(x,y)=>str(y.body.map(sform).join(sform(x.body))),
   split:(x,y)=>ls(l(''+y.body).split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join(''):String.fromCodePoint(0|x.body)),
