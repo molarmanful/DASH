@@ -19,6 +19,7 @@ d.config({
 fg.defineBoolean('expr',true)
 fg.defineString('f')
 fg.parse()
+repl=require('repl')
 
 const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
 
@@ -265,6 +266,10 @@ error=e=>{
   process.exit(1)
 },
 
+erro=e=>{
+  console.log('\x1b[31mERROR:\x1b[0m '+e)
+}
+
 ua=(x,y)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
     a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
@@ -314,6 +319,15 @@ I=x=>
 
 exec=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||a.type=='cond')?exec(I(x)):x
 
+ERR=e=>
+  e.message.match`\\[DecimalError\\]`?
+    e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `[1]
+  :e.message.match`Maximum call stack size exceeded`?
+    'too much recursion'
+  :e.stack.match`peg\\$buildStructuredError`?
+    'failed to parse\n'+e.message
+  :'js error -> '+e.stack
+
 if(F=fg.get('f')){
   try{
     const code=fs.readFileSync(F)+'',
@@ -321,18 +335,22 @@ if(F=fg.get('f')){
     ps=parser.parse(code)
     ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
   }catch(e){
-    error(
-      e.message.match`\\[DecimalError\\]`?
-        e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `[1]
-      :e.message.match`Maximum call stack size exceeded`?
-        'too much recursion'
-      :e.stack.match`peg\\$buildStructuredError`?
-        'failed to parse\n'+e.message
-      :'js error -> '+e.stack
-    )
+    error(ERR(e))
   }
 }else{
   logo=fs.readFileSync('dash.txt')+''
   pkg=fs.readFileSync('package.json')+''
   console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m`)
+  repl.start({
+    prompt:'DASH > ',
+    eval:(a)=>{
+      try{
+        parser=peg.generate(lex)
+        console.log(form(exec(parser.parse(a))))
+      }catch(e){
+        erro(ERR(e))
+      }
+      process.stdout.write('DASH > ')
+    }
+  })
 }
