@@ -209,7 +209,8 @@ cm={
   inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
-  dff:x=>ls(x.body.difference().map(a=>a.charAt?str(a):a))
+  dff:x=>ls(x.body.difference().map(a=>a.charAt?str(a):a)),
+  stop:x=>{process.exit()}
 };
 
 [
@@ -340,7 +341,7 @@ if(F=fg.get('f')){
 }else{
   logo=fs.readFileSync('dash.txt')+''
   pkg=fs.readFileSync('package.json')+''
-  console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m`)
+  console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m\n\n`)
   repl.start({
     prompt:'DASH > ',
     eval:(a)=>{
