@@ -116,8 +116,8 @@ sform=x=>
   :error('failed to format JSON\n'+JSON.stringify(x)),
 
 cm={
-  os:x=>(console.log(form(x)),x),
-  ol:x=>(console.log(sform(x)),x),
+  os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
+  ol:x=>(process.stdout.write(sform(x)),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
   rl:x=>(i=prompt('',0),i?str(i):bool(0)),
   rf:x=>str(fs.readFileSync(x.body)+''),
@@ -185,7 +185,7 @@ cm={
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),
-  src:x=>str(form(x)),
+  src:x=>str(form(x).replace(/\x1b\[\d+m/g,'')),
   eval:x=>parser.parse(''+x.body),
   S:(x,y)=>I(app(x,y)),
   sleep:x=>(slp.usleep(0|x.body),x),
@@ -210,6 +210,7 @@ cm={
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
   tkr:(x,y)=>ls(y.body.takeRight(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),
+  rpt:x=>ls(l.repeat(x,1/0)),
   inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
@@ -337,7 +338,8 @@ if(F=fg.get('f')){
   try{
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
-    ps&&ps.length&&(fg.get('expr')?console.log(form(exec(ps))):exec(ps))
+    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
+    console.log('')
   }catch(e){
     error(ERR(e))
   }

@@ -54,3 +54,8 @@ FizzBuzz:
   ]
 ) rng 1 101
 ```
+
+Quine (run with `--noexpr` flag):
+```
+f\@(ol "f\\";ol src f;ol ";f0");f0
+```
