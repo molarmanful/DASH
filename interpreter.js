@@ -29,7 +29,9 @@ len=x=>
     len(x.body)
   :x instanceof l.Sequence?
     x.parent&&!x.count?
-      len(x.parent)
+      x.arrays?
+        x.arrays.length+len(x.parent)
+      :len(x.parent)
     :x.count||x.length()
   :x instanceof l.GeneratedSequence?
     x.length()
@@ -170,7 +172,8 @@ cm={
   some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>y.body.map(a=>a.charAt?str(a):a).get(d.mod(''+x.body,len(y))),
-  set:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-1-d.mod(''+x.body.get(0).body,len(y)))))),
+  set:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
+  ins:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
   split:(x,y)=>ls(l(''+y.body).split(rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
