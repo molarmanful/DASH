@@ -322,7 +322,7 @@ I=x=>
     :error('bad application to '+form(z))
   :x,
 
-exec=x=>tr(x).nodes().some(a=>a.type=='app'||a.type=='var'||a.type=='cond')?exec(I(x)):x
+exec=x=>tr(x).nodes().some(a=>a!=[]._&&(a.type=='app'||a.type=='var'||a.type=='cond'))?exec(I(x)):I(x)
 
 ERR=e=>
   e.message.match`\\[DecimalError\\]`?
