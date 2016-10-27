@@ -72,7 +72,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(a=>form(I(a))).join(';'):x.body.take(3).map(a=>form(I(a))).join(';')+';...'}]`
+    `[${isFinite(len(x))?x.body.map(I).map(form).join(';'):x.body.take(3).map(I).map(form).join(';')+';...'}]`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -178,7 +178,7 @@ cm={
   bool:tru,
   num:x=>num(x.body),
   rnd:x=>num(0|x.body?d.random(0|x.body):''+0|d.random()*2),
-  con:(x,y)=>x.type!='ls'&&y.type!='ls'?str(sform(x)+sform(y)):ls(x.concat(y.body)),
+  con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),

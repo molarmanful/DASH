@@ -41,10 +41,16 @@ bool=a:[TF]{
 
 //list
 ls='['a:expr*']'?{
-  return{
-    type:'ls',
-    body:a.filter(x=>!x.big)
-  }
+  a=a.filter(x=>!x.big)
+  return a.reduce((x,y)=>({
+    type:'app',
+    body:{
+      type:'app',
+      body:{type:'fn',body:'con'},
+      f:x
+    },
+    f:y
+  }),{type:'ls',body:[]})
 }
 //expression list (holds multiple expressions)
 arg='('a:expr*')'?{
