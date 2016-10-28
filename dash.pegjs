@@ -46,7 +46,7 @@ ls='['a:expr*']'?{
     type:'app',
     body:{
       type:'app',
-      body:{type:'fn',body:'con'},
+      body:{type:'fn',body:'cat'},
       f:x
     },
     f:y

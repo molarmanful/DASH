@@ -171,7 +171,7 @@ cm={
   every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
   some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>y.body.map(a=>a.charAt?str(a):a).get(d.mod(''+x.body,len(y))),
+  get:(x,y)=>(y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y)))),
   set:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
   ins:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
@@ -182,6 +182,7 @@ cm={
   num:x=>num(x.body),
   rnd:x=>num(0|x.body?d.random(0|x.body):''+0|d.random()*2),
   con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y.type!='ls'?y:y.body)),
+  cat:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+x.body)),Y-X))),
   str:x=>str(sform(x)),
@@ -214,7 +215,7 @@ cm={
   inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
-  dff:x=>ls(x.body.difference().map(a=>a.charAt?str(a):a)),
+  dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
   stop:x=>{process.exit()}
 };
 
@@ -252,6 +253,7 @@ cm={
   ['><','join'],
   ['<>','split'],
   ['++','con'],
+  ['+_','cat'],
   ['$$','eval'],
   ['%%','sleep'],
   ['<|>','chunk'],
@@ -292,7 +294,7 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
 })),
 
 I=x=>
-  (x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
+  !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     tru(0)
   :x.type=='cond'?
     tru(I(x.body)).body?I(x.f):I(x.g)
