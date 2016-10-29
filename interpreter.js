@@ -9,8 +9,9 @@ d=require('decimal.js'),
 tr=require('traverse'),
 P=require('path'),
 slp=require('sleep'),
-repl=require('repl')
-prompt=require('prompt-sync')()
+repl=require('repl'),
+prompt=require('prompt-sync')(),
+Exec=require('child_process').execSync
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
@@ -209,14 +210,14 @@ cm={
   R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
-  tkr:(x,y)=>ls(y.body.takeRight(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),
   rpt:x=>ls(l.repeat(x,1/0)),
   inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
-  stop:x=>{process.exit()}
+  stop:x=>{process.exit()},
+  sh:x=>str(Exec(''+x.body))
 };
 
 [
@@ -340,6 +341,8 @@ ERR=e=>
     'too much recursion'
   :e.stack.match`peg\\$buildStructuredError`?
     'failed to parse\n'+e.message
+  :e.stack.match`Command failed`?
+    'failed to execute '+e.stack.match`Command failed: (.+)`[1]
   :'js error -> '+e.stack
 
 if(F=fg.get('f')){
