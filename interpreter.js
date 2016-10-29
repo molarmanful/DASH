@@ -54,7 +54,7 @@ tru=x=>(
 ),
 
 str=x=>({type:'str',body:x}),
-num=x=>({type:'num',body:isNaN(+x)?l(x).map(a=>a.codePointAt()).sum():(''+d(''+(x.type=='ls'?len(x):x))).replace(/_/g,'-').replace(/oo/g,'Infinity')}),
+num=x=>({type:'num',body:isNaN(+x)?x.charAt?l(x).map(a=>a.codePointAt()).sum():len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity')}),
 ls=x=>({type:'ls',body:x}),
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
@@ -62,7 +62,7 @@ pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
-rgx=x=>x.type=='rgx'?x.body:''+x.body,
+rgx=x=>x.type=='rgx'?x.body:RegExp(x.body),
 
 form=x=>
   x.type=='num'?
