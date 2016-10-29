@@ -362,7 +362,7 @@ if(F=fg.get('f')){
     prompt:'DASH > ',
     eval:(a)=>{
       try{
-        console.log(form(exec(parser.parse(a))))
+        console.log('\n'+form(exec(parser.parse(a))))
       }catch(e){
         erro(ERR(e))
       }
