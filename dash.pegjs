@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
+type=str/comp/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -114,5 +114,21 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'{
     body:a,
     f:b&&b.length?b.filter(x=>!x.big):{type:'bool',body:1},
     g:c&&c.length?c.filter(x=>!x.big):{type:'bool',body:0}
+  }
+}
+
+//composition
+comp=a:(fn/def/app/arg)_*'.'_*b:(fn/def/app/arg/comp){
+  return{
+    type:'def',
+    body:{
+      type:'app',
+      body:a,
+      f:{
+        type:'app',
+        body:b,
+        f:{type:'a',body:0}
+      }
+    }
   }
 }

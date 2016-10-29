@@ -216,7 +216,8 @@ cm={
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
-  stop:x=>{process.exit()}
+  stop:x=>{process.exit()},
+  comp:(x,y)=>app(x,y)
 };
 
 [
@@ -326,11 +327,13 @@ I=x=>
     :error('bad application to '+form(z))
   :x,
 
-exec=x=>tr(x).nodes().some(a=>a!=[]._&&(a.type=='app'||a.type=='var'||a.type=='cond'))?exec(I(x)):I(x)
+exec=x=>tr(x).map(function(a){
+  return a.type=='def'?this.block():a!=[]._&&(a.type=='app'||a.type=='var'||a.type=='cond')
+}).length?exec(I(x)):I(x)
 
 ERR=e=>
   e.message.match`\\[DecimalError\\]`?
-    e.message.match(`Invalid argument`)&&'invalid argument passed to '+e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `[1]
+    e.message.match(`Invalid argument`)&&'invalid argument passed to '+(e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `||[,'number conversion'])[1]
   :e.message.match`Maximum call stack size exceeded`?
     'too much recursion'
   :e.stack.match`peg\\$buildStructuredError`?
