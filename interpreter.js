@@ -11,7 +11,8 @@ P=require('path'),
 slp=require('sleep'),
 prompt=require('prompt-sync')(),
 Exec=require('child_process').execSync,
-key=require('keypress')
+key=require('keypress'),
+XRegExp=require('XRegExp')
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
@@ -63,7 +64,7 @@ pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
-rgx=x=>x.type=='rgx'?x.body:RegExp(x.body),
+rgx=x=>x.type=='rgx'?x.body:XRegExp(x.body),
 
 form=x=>
   x.type=='num'?
@@ -205,10 +206,9 @@ cm={
   or:(x,y)=>tru(tru(x).body||tru(y).body),
   xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
   not:x=>tru(+!tru(x).body),
-  mstr:(x,y)=>ls((y.body.match(rgx(x))||[]).map(str)),
   xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
   rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
-  R:(x,y)=>({type:'rgx',body:RegExp(''+x.body,''+y.body)}),
+  R:(x,y)=>({type:'rgx',body:XRegExp(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),

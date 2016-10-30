@@ -27,6 +27,7 @@
     "prompt-sync": "^4.1.4",
     "prompt-sync-history": "^1.0.1",
     "sleep": "^4.0.0",
-    "traverse": "^0.6.6"
+    "traverse": "^0.6.6",
+    "xregexp": "^3.1.1"
   }
 }
