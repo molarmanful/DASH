@@ -361,13 +361,13 @@ if(F=fg.get('f')){
     sigint:true
   })
   process.stdin.on('keypress',(x,y)=>{
-    y&&ow('DASH > '+(
+    y&&ow(
       y.name=='up'?
-        Prompt.history.prev()||''
+        ow('DASH > '+(Prompt.history.prev()||''))
       :y.name=='down'?
-        Prompt.history.next()||''
-      :''
-    ))
+        ow('DASH > '+(Prompt.history.next()||''))
+      :0
+    )
   })
   for(;;){
     p=Prompt('DASH > ')
