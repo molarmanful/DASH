@@ -328,7 +328,7 @@ I=x=>
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='ls'?
       ls(z.body.map(a=>I(app(a,x.f))))
-    :error('bad application to '+form(z))
+    :z
   :x,
 
 exec=x=>tr(x).map(function(a){
