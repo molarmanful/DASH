@@ -217,7 +217,8 @@ cm={
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
   exit:x=>{process.exit()},
-  sh:x=>str(Exec(''+x.body))
+  sh:x=>str(Exec(''+x.body)),
+  while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y)
 };
 
 [
@@ -326,7 +327,8 @@ I=x=>
   :x,
 
 exec=x=>tr(x).map(function(a){
-  return a.type=='def'?this.block():a!=[]._&&(a.type=='app'||a.type=='var'||a.type=='cond')
+  if(a.type=='def')this.block();
+  else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'))return 1
 }).length?exec(I(x)):I(x)
 
 ERR=e=>
@@ -353,12 +355,13 @@ if(F=fg.get('f')){
 }else{
   logo=fs.readFileSync('dash.txt')+''
   pkg=fs.readFileSync('package.json')+''
-  console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m\n\n`)
+  console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful) under the MIT License.\x1b[0m\n\n`)
   key(process.stdin)
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
   Prompt=require('prompt-sync')({
     history:require('prompt-sync-history')(),
-    sigint:true
+    sigint:true,
+    autocomplete:x=>hst.split`\n`.map(a=>~a.indexOf(x)?a:0).filter(a=>a)
   })
   process.stdin.on('keypress',(x,y)=>{
     y&&ow(
@@ -369,9 +372,11 @@ if(F=fg.get('f')){
       :0
     )
   })
+  hst=fs.readFileSync('.prompt_hist.txt')+''
   for(;;){
     p=Prompt('DASH > ')
     Prompt.history.save()
+    hst=fs.readFileSync('.prompt_hist.txt')+''
     try{
       console.log('\n'+form(exec(parser.parse(p))))
     }catch(e){
