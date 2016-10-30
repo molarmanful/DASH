@@ -355,9 +355,10 @@ if(F=fg.get('f')){
   pkg=fs.readFileSync('package.json')+''
   console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m\n\n`)
   key(process.stdin)
-  ow=x=>console.log('\r'+' '.repeat(1e4)+'\r'+x)
+  ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
   Prompt=require('prompt-sync')({
-    history:require('prompt-sync-history')()
+    history:require('prompt-sync-history')(),
+    sigint:true
   })
   process.stdin.on('keypress',(x,y)=>{
     y&&ow('DASH > '+(
