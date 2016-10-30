@@ -2,3 +2,4 @@
 node_modules
 *.log
 *.dash
+.prompt_hist.txt

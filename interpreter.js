@@ -9,9 +9,9 @@ d=require('decimal.js'),
 tr=require('traverse'),
 P=require('path'),
 slp=require('sleep'),
-repl=require('repl'),
 prompt=require('prompt-sync')(),
-Exec=require('child_process').execSync
+Exec=require('child_process').execSync,
+key=require('keypress')
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
@@ -120,7 +120,7 @@ cm={
   os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
   ol:x=>(process.stdout.write(sform(x)),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
-  rl:x=>(i=prompt('',0),i?str(i):bool(0)),
+  rl:x=>(i=prompt('',0),i?str(i):tru(0)),
   rf:x=>str(fs.readFileSync(x.body)+''),
   E:x=>(d.config({precision:0|x.body}),x),
   abs:x=>num(d.abs(num(x.body).body)),
@@ -146,7 +146,7 @@ cm={
   min:x=>num(d.min(...x.body.map(a=>num(a.body).body).value())),
   mod:(x,y)=>num(d.mod(num(x.body).body,num(y.body).body)),
   mul:(x,y)=>num(d.mul(num(x.body).body,num(y.body).body)),
-  pow:(x,y)=>num(d.pow(num(x.body).body,num(y.body).body)),
+  pow:(x,y)=>+x.body<0?tru(0):num(d.pow(num(x.body).body,num(y.body).body)),
   round:x=>num(d.round(num(x.body).body)),
   sign:x=>num(d.sign(num(x.body).body)),
   sin:x=>num(d.sin(num(x.body).body)),
@@ -216,7 +216,7 @@ cm={
   uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
-  stop:x=>{process.exit()},
+  exit:x=>{process.exit()},
   sh:x=>str(Exec(''+x.body))
 };
 
@@ -274,12 +274,7 @@ const vs={
 
 error=e=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
-  process.exit(1)
 },
-
-erro=e=>{
-  console.log('\x1b[31mERROR:\x1b[0m '+e)
-}
 
 ua=(x,y)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
@@ -353,20 +348,33 @@ if(F=fg.get('f')){
     console.log('')
   }catch(e){
     error(ERR(e))
+    process.exit(1)
   }
 }else{
   logo=fs.readFileSync('dash.txt')+''
   pkg=fs.readFileSync('package.json')+''
   console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful).\x1b[0m\n\n`)
-  repl.start({
-    prompt:'DASH > ',
-    eval:(a)=>{
-      try{
-        console.log('\n'+form(exec(parser.parse(a))))
-      }catch(e){
-        erro(ERR(e))
-      }
-      process.stdout.write('DASH > ')
-    }
+  key(process.stdin)
+  ow=x=>console.log('\r'+' '.repeat(1e4)+'\r'+x)
+  Prompt=require('prompt-sync')({
+    history:require('prompt-sync-history')()
   })
+  process.stdin.on('keypress',(x,y)=>{
+    y&&ow('DASH > '+(
+      y.name=='up'?
+        Prompt.history.prev()||''
+      :y.name=='down'?
+        Prompt.history.next()||''
+      :''
+    ))
+  })
+  for(;;){
+    p=Prompt('DASH > ')
+    Prompt.history.save()
+    try{
+      console.log('\n'+form(exec(parser.parse(p))))
+    }catch(e){
+      error(ERR(e))
+    }
+  }
 }
