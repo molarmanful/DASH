@@ -167,6 +167,7 @@ cm={
   fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
   foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
   tkwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
+  drwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
   fltr:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).filter(a=>tru(I(app(x,a))).body)),
   find:(x,y)=>y.body.map(a=>y.type=='str'?str(a):a).find(a=>tru(I(app(x,a))).body),
   every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
@@ -218,7 +219,9 @@ cm={
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
   exit:x=>{process.exit()},
   sh:x=>str(Exec(''+x.body)),
-  while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y)
+  while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
+  cns:(x,y)=>ls(y.body.consecutive(0|x.body)),
+  tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b.charAt?str(b):b))))
 };
 
 [
@@ -245,6 +248,7 @@ cm={
   ['+>','fold'],
   ['<+','foldr'],
   ['_>','tkwl'],
+  ['~>','drwl'],
   ['!>','fltr'],
   [':>','find'],
   ['*>','every'],
@@ -262,7 +266,8 @@ cm={
   ['&','and'],
   ['|','or'],
   ['$','xor'],
-  ['!','not']
+  ['!','not'],
+  ["'",'tsp']
 ].map(a=>cm[a[0]]=cm[a[1]])
 //.map(x=>`\`${x[0]}\`|`+x[1]).join`\n`
 
