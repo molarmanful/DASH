@@ -12,7 +12,7 @@ slp=require('sleep'),
 prompt=require('prompt-sync')(),
 Exec=require('child_process').execSync,
 key=require('keypress'),
-XRegExp=require('XRegExp')
+XRE=require('XRegExp')
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
@@ -64,7 +64,7 @@ pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
-rgx=x=>x.type=='rgx'?x.body:XRegExp(x.body),
+rgx=x=>x.type=='rgx'?x.body:XRE(x.body),
 
 form=x=>
   x.type=='num'?
@@ -178,7 +178,7 @@ cm={
   set:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
   ins:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
-  split:(x,y)=>ls(l(''+y.body).split(rgx(x)).map(str)),
+  split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
   fc:x=>str(x.type=='ls'?x.body.map(a=>String.fromCodePoint(0|a.body)).join(''):String.fromCodePoint(0|x.body)),
   bool:tru,
@@ -206,9 +206,10 @@ cm={
   or:(x,y)=>tru(tru(x).body||tru(y).body),
   xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
   not:x=>tru(+!tru(x).body),
-  xstr:(x,y)=>ls((rgx(x).exec(''+y.body)||[]).map(str)),
-  rstr:(x,y)=>str((y.body+'').replace(rgx(x.body.get(0)),(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
-  R:(x,y)=>({type:'rgx',body:XRegExp(''+x.body,''+y.body)}),
+  mstr:(x,y)=>ls((XRE.match(''+y.body)||[],rgx(x)).map(str)),
+  xstr:(x,y)=>ls((XRE.exec(''+y.body)||[],rgx(x)).map(str)),
+  rstr:(x,y)=>str(XRE.replace(y.body+'',rgx(x.body.get(0)),x.body.get(1).body.charAt?''+x.body.get(1).body:(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
+  R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),
