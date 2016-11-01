@@ -16,6 +16,7 @@ For installation/docs, visit the [wiki](https://github.com/molarmanful/DASH/wiki
 - Implements a zero-indexed version of de Bruijn indices
 - Mainly prefix-based
 - Float support for up to 1000-digit precision
+- Simple package system
 - Easy installation via Node.js and NPM
 
 #Examples

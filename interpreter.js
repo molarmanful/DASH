@@ -21,6 +21,7 @@ d.config({
 })
 fg.defineBoolean('expr',true)
 fg.defineString('f')
+fg.defineNumber('tk',10)
 fg.parse()
 
 const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
@@ -76,7 +77,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(I).map(form).join(';'):x.body.take(3).map(I).map(form).join(';')+';...'}]`
+    `[${isFinite(len(x))?x.body.map(I).map(form).join(';'):x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -234,7 +235,8 @@ cm={
   cns:(x,y)=>ls(y.body.consecutive(0|x.body)),
   tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
   pkg:x=>pkg(''+x.body),
-  ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x])))
+  ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x]))),
+  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0))
 };
 
 [
