@@ -233,7 +233,8 @@ cm={
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
   cns:(x,y)=>ls(y.body.consecutive(0|x.body)),
   tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
-  pkg:x=>pkg(''+x.body)
+  pkg:x=>pkg(''+x.body),
+  ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x])))
 };
 
 [
@@ -279,7 +280,8 @@ cm={
   ['|','or'],
   ['$','xor'],
   ['!','not'],
-  ["'",'tsp']
+  ["'",'tsp'],
+  [',','ind']
 ].map(a=>cm[a[0]]=cm[a[1]])
 //.map(x=>`\`${x[0]}\`|`+x[1]).join`\n`
 
