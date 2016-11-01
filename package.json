@@ -1,6 +1,6 @@
 {
   "name": "dashlang",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "preferGlobal": true,
   "description": "A great leap forward in programming language design.",
   "main": "interpreter.js",
@@ -15,7 +15,7 @@
   },
   "bin": {
     "dash": "./interpreter.js",
-    "delishusly":"./pm.js"
+    "delishusly": "./pm.js"
   },
   "homepage": "https://github.com/molarmanful/DASH#readme",
   "dependencies": {
