@@ -117,6 +117,16 @@ sform=x=>
     '[rgx]'
   :error('failed to format JSON\n'+JSON.stringify(x)),
 
+pkg=x=>{
+  try{
+    f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
+  }
+  catch(e){
+    error('failed to read package')
+  }
+  return exec(parser.parse(f))
+},
+
 cm={
   os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
   ol:x=>(process.stdout.write(sform(x)),x),
@@ -222,7 +232,8 @@ cm={
   sh:x=>str(Exec(''+x.body)),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
   cns:(x,y)=>ls(y.body.consecutive(0|x.body)),
-  tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0)))))
+  tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
+  pkg:x=>pkg(''+x.body)
 };
 
 [
