@@ -223,6 +223,7 @@ cm={
   R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
+  dp:(x,y)=>ls(y.body.drop(0|x.body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(''+a)),1/0)),
   rpt:x=>ls(l.repeat(x,1/0)),
   inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
