@@ -44,7 +44,7 @@ oct=a:('0o'[0-8]+('.'[0-8]+)?/'.'[0-8]+){
     body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
   }
 }
-hex=a:('0x'[0-9a-f]+('.'[0-9a-f]+)?/'.'[0-9a-f]+){
+hex=a:('0x'[0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+){
   var f
   return{
     type:'num',
