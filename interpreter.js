@@ -56,8 +56,23 @@ tru=x=>(
   }
 ),
 
+D=x=>{
+  try{
+    return d(x)+''
+  }catch(e){
+    return'NaN'
+  }
+},
+
 str=x=>({type:'str',body:x}),
-num=x=>({type:'num',body:isNaN(+x)?x.charAt?l(x).map(a=>a.codePointAt()).sum():len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity')}),
+num=x=>({
+  type:'num',
+  body:
+    isNaN(+D(''+x))?
+      x.charAt?
+        l(''+x).map(a=>a.codePointAt()).sum()+''
+      :len(ls(x))
+    :d(x+'')['to'+((x+'').match`0b`?'Binary':(x+'').match`0o`?'Octal':(x+'').match`0x`?'Hexadecimal':'String')]().replace(/_/g,'-').replace(/oo/g,'Infinity')}),
 ls=x=>({type:'ls',body:x}),
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
@@ -107,7 +122,7 @@ sform=x=>
   :x.type=='def'?
     `@(expr)`
   :x.map?
-    `(expr)`
+    x.map(sform)
   :x.type=='app'?
     sform(x.body)+' '+sform(x.f)
   :x.type=='pt'?
@@ -198,7 +213,7 @@ cm={
   con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y.type!='ls'?y:y.body)),
   cat:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
   rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
-  rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,num(x.body).body)),Y-X))),
+  rng:(x,y)=>([X,Y]=[num(x.body).body,num(y.body).body],ls(l.generate(a=>num(d.add(a,num(x.body).body)),d.sub(Y,X)))),
   str:x=>str(sform(x)),
   src:x=>str(form(x).replace(/\x1b\[\d+m/g,'')),
   eval:x=>parser.parse(''+x.body),
@@ -237,7 +252,13 @@ cm={
   tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
   pkg:x=>pkg(''+x.body),
   ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x]))),
-  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0))
+  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
+  hx:x=>num(d(x.body).toHexadecimal()),
+  bn:x=>num(d(x.body).toBinary()),
+  dc:x=>num(d(x.body)+''),
+  ot:x=>num(d(x.body).toOctal()),
+  lc:x=>num((''+x.body).toLowerCase()),
+  uc:x=>num((''+x.body).toUpperCase())
 };
 
 [
@@ -325,7 +346,7 @@ I=x=>
   :x.type=='str'?
     str(l(x.body))
   :x.type=='num'?
-    num(l(x.body))
+    l(num(x.body))
   :x.type=='var'?
     (vs[x.body.body]=x.f)
   :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
@@ -372,7 +393,7 @@ if(F=fg.get('f')){
     console.log('')
   }catch(e){
     error(ERR(e))
-    process.exit(1)
+    process.exit()
   }
 }else{
   logo=fs.readFileSync('dash.txt')+''

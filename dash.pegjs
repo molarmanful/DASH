@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/comp/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
+type=str/comp/bin/oct/hex/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -28,6 +28,27 @@ num=a:([0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'.'[0-9]+('e''_'?[0-9]+)?/'oo'){
   return{
     type:'num',
     body:a!='oo'?(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a):'Infinity'
+  }
+}
+bin=a:('0b'[01]+('.'[01]+)?/'.'[0-9]+){
+  var f
+  return{
+    type:'num',
+    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
+  }
+}
+oct=a:('0o'[0-8]+('.'[0-8]+)?/'.'[0-8]+){
+  var f
+  return{
+    type:'num',
+    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
+  }
+}
+hex=a:('0x'[0-9a-f]+('.'[0-9a-f]+)?/'.'[0-9a-f]+){
+  var f
+  return{
+    type:'num',
+    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
   }
 }
 
