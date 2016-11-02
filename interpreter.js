@@ -56,9 +56,9 @@ tru=x=>(
   }
 ),
 
-str=x=>({type:'str',body:x}),
+str=x=>({type:'str',body:l(x)}),
 num=x=>({type:'num',body:isNaN(+x)?x.charAt?l(x).map(a=>a.codePointAt()).sum():len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity')}),
-ls=x=>({type:'ls',body:x}),
+ls=x=>({type:'ls',body:l(x)}),
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
 pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
@@ -237,7 +237,12 @@ cm={
   tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
   pkg:x=>pkg(''+x.body),
   ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x]))),
-  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0))
+  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
+  lc:x=>num((''+x.body).toLowerCase()),
+  uc:x=>num((''+x.body).toUpperCase()),
+  hx:x=>str(d(x.body).toHexadecimal()),
+  bn:x=>str(d(x.body).toBinary()),
+  ot:x=>str(d(x.body).toOctal())
 };
 
 [
@@ -321,11 +326,11 @@ I=x=>
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
-    ls(l(x.body))
+    ls(x.body)
   :x.type=='str'?
-    str(l(x.body))
+    str(x.body)
   :x.type=='num'?
-    num(l(x.body))
+    num(x.body)
   :x.type=='var'?
     (vs[x.body.body]=x.f)
   :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
