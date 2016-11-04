@@ -185,7 +185,6 @@ cm={
   every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
   some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
-  sz:x=>num(l(x.body).size()),
   get:(x,y)=>(y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y)))),
   set:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
   ins:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))),
