@@ -77,7 +77,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(I).map(form).join(';'):x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
+    `[${!x.body.get(Number.MAX_VALUE)?x.body.map(I).map(form).join(';'):x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
