@@ -60,3 +60,18 @@ Quine (run with `--noexpr` flag):
 ```
 f\ @(ol "f\ ";ol src f;ol ";f0");f0
 ```
+
+∞ x ∞ Matrix:
+```
+rng rng 1
+```
+
+Truth Machine (enter nothing for falsy and anything for truthy):
+```
+f\ @[
+  #0
+    ? f %% ol 1
+    ? 0
+];
+f rl ()
+```
