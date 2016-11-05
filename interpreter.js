@@ -365,6 +365,8 @@ ERR=e=>
     'failed to parse\n'+e.message
   :e.stack.match`Command failed`?
     'failed to execute '+e.stack.match`Command failed: (.+)`[1]
+  :e.stack.match`Backreference to undefined`?
+    `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
   :'js error -> '+e.stack
 
 if(F=fg.get('f')){
