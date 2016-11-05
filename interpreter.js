@@ -27,7 +27,7 @@ fg.parse()
 const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
 parser=peg.generate(lex),
 
-lng=(x,y)=>y<Number.MAX_VALUE?l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0:1/0,
+lng=(x,y=0)=>y<Number.MAX_VALUE?l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0:1/0,
 len=x=>{
   try{
     return x.body.length()
