@@ -25,20 +25,17 @@ fg.defineNumber('tk',10)
 fg.parse()
 
 const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
-parser=peg.generate(lex)
+parser=peg.generate(lex),
 
-len=x=>
-  x.body?
-    len(x.body)
-  :x instanceof l.Sequence?
-    x.parent&&!x.count?
-      x.arrays?
-        x.arrays.length+len(x.parent)
-      :len(x.parent)
-    :x.count||x.length()
-  :x instanceof l.GeneratedSequence?
-    x.length()
-  :x.length,
+lng=(x,y)=>y<Number.MAX_VALUE?l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0:1/0,
+len=x=>{
+  try{
+    return x.body.length()
+  }
+  catch(e){
+    return lng(x.body)
+  }
+},
 
 tru=x=>(
   {
@@ -77,7 +74,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${!x.body.get(Number.MAX_VALUE)?x.body.map(I).map(form).join(';'):x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
+    `[${x.body.take(Number.MAX_VALUE).get(Number.MAX_VALUE)?x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...':x.body.map(I).map(form).join(';')}]`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -103,7 +100,7 @@ sform=x=>
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
-    `[ls ${isFinite(len(x))?len(x):'oo'}]`
+    `[ls ${x.body.take(Number.MAX_VALUE).get(Number.MAX_VALUE)?len(x):'oo'}]`
   :x.type=='def'?
     `@(expr)`
   :x.map?
