@@ -68,10 +68,10 @@ rpt rpt 1
 
 Truth Machine (enter nothing for falsy and anything for truthy):
 ```
-f\ @[
+t\ @[
   #0
-    ? f %% ol 1
+    ? f sleep ol 1
     ? 0
 ];
-f rl ()
+t rl ()
 ```
