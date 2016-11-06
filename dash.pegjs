@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/comp/bin/oct/hex/num/bool/cond/ls/var/aapp/app/def/arg/fn/a/ref
+type=str/comp/bin/oct/hex/num/bool/cond/ls/obj/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -72,6 +72,14 @@ ls='['a:expr*']'?{
     },
     f:y
   }),{type:'ls',body:[]})
+}
+//object
+obj='{'_*a:(var';'?)*_*'}'{
+  var o={}
+  return{
+    type:'obj',
+    body:(a.map(x=>o[x[0].body.body]=x[0].f),o)
+  }
 }
 //expression list (holds multiple expressions)
 arg='('a:expr*')'?{

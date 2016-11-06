@@ -56,6 +56,7 @@ tru=x=>(
 str=x=>({type:'str',body:l(x)}),
 num=x=>({type:'num',body:isNaN(+x)?x.charAt?l(x).map(a=>a.codePointAt()).sum():len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity')}),
 ls=x=>({type:'ls',body:l(x)}),
+obj=x=>({type:'obj',body:l(x)})
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
 pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
@@ -74,7 +75,9 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(I).map(form).join(';'):x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
+    `[${isFinite(len(x))?x.body.map(I).map(form).value().join`;`:x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
+  :x.type=='obj'?
+    `{${x.body.map((a,b)=>'\x1b[33m'+b+'\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -100,7 +103,9 @@ sform=x=>
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
-    `[ls ${x.body.take(Number.MAX_VALUE).get(Number.MAX_VALUE)?len(x):'oo'}]`
+    `[ls ${isFinite(len(x))?len(x):'oo'}]`
+  :x.type=='obj'?
+    `{${x.body.keys().size()}}`
   :x.type=='def'?
     `@(expr)`
   :x.map?
@@ -182,9 +187,15 @@ cm={
   every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
   some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>(y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y)))),
-  set:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
-  ins:(x,y)=>(Y=y.body.map(a=>y.type=='str'?str(a):a),ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))),
+  get:(x,y)=>y.type=='obj'?y.body.get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y))),
+  set:(x,y)=>
+    y.type=='obj'?
+      (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
+    :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
+  ins:(x,y)=>(
+    Y=y.body.map(a=>y.type=='str'?str(a):a),
+    ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))
+  ),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
   split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
@@ -214,9 +225,17 @@ cm={
   or:(x,y)=>tru(tru(x).body||tru(y).body),
   xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
   not:x=>tru(+!tru(x).body),
-  mstr:(x,y)=>ls([...XRE.match(''+y.body,rgx(x))||[]].map(str)),
-  xstr:(x,y)=>ls([...XRE.exec(''+y.body,rgx(x))||[]].map(str)),
-  rstr:(x,y)=>str(XRE.replace(y.body+'',rgx(x.body.get(0)),x.body.get(1).body.charAt?''+x.body.get(1).body:(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2)).map(i=>str(i||'')))))))),
+  mstr:(x,y)=>obj(l(Object.assign({},XRE.match(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
+  xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
+  rstr:(x,y)=>str(
+    XRE.replace(
+      y.body+'',
+      rgx(x.body.get(0)),
+      (x.body.get(1)||str('')).body.charAt?
+        ''+(x.body.get(1)||str('')).body
+      :(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2).map(i=>str(i||'')))))))
+    )
+  ),
   R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|x.body).map(a=>a.charAt?str(a):a)),
@@ -232,9 +251,9 @@ cm={
   sh:x=>str(Exec(''+x.body)),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
   cns:(x,y)=>ls(y.body.consecutive(0|x.body).map(ls).rest(0|x.body-1)),
-  tsp:x=>ls(x.body.get(0).body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
+  tsp:x=>ls(x.body.first().body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
   pkg:x=>pkg(''+x.body),
-  ind:x=>cm.tsp(I(ls([cm.rng(num(0),num(len(x))),x]))),
+  ind:x=>cm.tsp(I(ls(x.type=='obj'?[ls(x.body.keys().map(a=>str(''+a))),ls(x.body.values())]:[cm.rng(num(0),num(len(x))),x]))),
   cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
   lc:x=>num((''+x.body).toLowerCase()),
   uc:x=>num((''+x.body).toUpperCase()),
@@ -325,6 +344,8 @@ I=x=>
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
     ls(x.body)
+  :x.type=='obj'?
+    obj(x.body)
   :x.type=='str'?
     str(x.body)
   :x.type=='num'?
