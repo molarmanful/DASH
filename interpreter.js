@@ -259,7 +259,11 @@ cm={
   uc:x=>num((''+x.body).toUpperCase()),
   hx:x=>str(d(x.body).toHexadecimal()),
   bn:x=>str(d(x.body).toBinary()),
-  ot:x=>str(d(x.body).toOctal())
+  ot:x=>str(d(x.body).toOctal()),
+  key:x=>cm.tsp(cm.ind(x)).body.first(),
+  val:x=>cm.tsp(cm.ind(x)).body.last(),
+  pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
+  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value()))
 };
 
 [
