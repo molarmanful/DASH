@@ -74,11 +74,11 @@ ls='['a:expr*']'?{
   }),{type:'ls',body:[]})
 }
 //object
-obj='{'_*a:((num/fn/str)'\\'type';'?)*_*'}'{
+obj='{'_*a:((num/fn/str)_*'\\'_*type_*';'?)*_*'}'{
   var o={}
   return{
     type:'obj',
-    body:(a.map(x=>o[x[0].body]=x[2]),o)
+    body:(a.map(x=>o[x[0].body]=x[4]),o)
   }
 }
 //expression list (holds multiple expressions)
