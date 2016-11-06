@@ -77,7 +77,7 @@ form=x=>
   :x.type=='ls'?
     `[${isFinite(len(x))?x.body.map(I).map(form).value().join`;`:x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
   :x.type=='obj'?
-    `{${x.body.map((a,b)=>'\x1b[33m'+b+'\x1b[0m\\'+form(a)).value().join`;`}}`
+    `{${x.body.map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
