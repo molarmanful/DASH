@@ -120,8 +120,6 @@ sform=x=>
     '[rgx]'
   :error('failed to format JSON\n'+JSON.stringify(x),1),
 
-cset=(x,y)=>cm[x]=y,
-
 pkg=x=>{
   try{
     f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
