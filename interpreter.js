@@ -327,6 +327,19 @@ error=(e,f)=>{
   f&&process.exit()
 },
 
+ERR=e=>
+  e.message.match`\\[DecimalError\\]`?
+    e.message.match(`Invalid argument`)&&'invalid argument passed to '+(e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `||[,'number conversion'])[1]
+  :e.message.match`Maximum call stack size exceeded`?
+    'too much recursion'
+  :e.stack.match`peg\\$buildStructuredError`?
+    'failed to parse\n'+e.message
+  :e.stack.match`Command failed`?
+    `failed to execute "${e.stack.match`Command failed: (.+)`[1]}"`
+  :e.stack.match`Backreference to undefined`?
+    `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
+  :'js error -> '+e.stack,
+
 ua=(x,y)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
     a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
@@ -382,19 +395,6 @@ exec=x=>tr(x).map(function(a){
   if(a&&a.type=='def')this.block();
   else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'))return 1
 }).length?exec(I(x)):I(x)
-
-ERR=e=>
-  e.message.match`\\[DecimalError\\]`?
-    e.message.match(`Invalid argument`)&&'invalid argument passed to '+(e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `||[,'number conversion'])[1]
-  :e.message.match`Maximum call stack size exceeded`?
-    'too much recursion'
-  :e.stack.match`peg\\$buildStructuredError`?
-    'failed to parse\n'+e.message
-  :e.stack.match`Command failed`?
-    `failed to execute "${e.stack.match`Command failed: (.+)`[1]}"`
-  :e.stack.match`Backreference to undefined`?
-    `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
-  :'js error -> '+e.stack
 
 if(require.main!=module){
   module.exports=this
