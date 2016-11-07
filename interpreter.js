@@ -94,7 +94,7 @@ form=x=>
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
   :x.type=='rgx'?
     `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
-  :error('failed to format JSON\n'+JSON.stringify(x)),
+  :error('failed to format JSON\n'+JSON.stringify(x),1),
 sform=x=>
   x.type=='num'?
     (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
@@ -118,14 +118,16 @@ sform=x=>
     '[cond]'
   :x.type=='rgx'?
     '[rgx]'
-  :error('failed to format JSON\n'+JSON.stringify(x)),
+  :error('failed to format JSON\n'+JSON.stringify(x),1),
+
+cset=(x,y)=>cm[x]=y,
 
 pkg=x=>{
   try{
     f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
   }
   catch(e){
-    error('failed to read package')
+    error(`failed to read package "${x}"\n`,1)
   }
   return exec(parser.parse(f))
 },
@@ -135,7 +137,7 @@ cm={
   ol:x=>(process.stdout.write(sform(x)),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
   rl:x=>(i=prompt('',0),i?str(i):tru(0)),
-  rf:x=>str(fs.readFileSync(x.body)+''),
+  rf:x=>str(fs.readFileSync(x.body+'')+''),
   E:x=>(d.config({precision:0|x.body}),x),
   abs:x=>num(d.abs(num(x.body).body)),
   acos:x=>num(d.acos(num(x.body).body)),
@@ -263,7 +265,8 @@ cm={
   key:x=>cm.tsp(cm.ind(x)).body.first(),
   val:x=>cm.tsp(cm.ind(x)).body.last(),
   pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
-  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value()))
+  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value())),
+  js:x=>(eval(''+x.body),x)
 };
 
 [
@@ -321,8 +324,9 @@ const vs={
   ep:x=>num('.'+'0'.repeat(d.precision)+1)
 },
 
-error=e=>{
+error=(e,f)=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
+  f&&process.exit()
 },
 
 ua=(x,y)=>(X=tr(x),X.map(function(a){
@@ -366,7 +370,7 @@ I=x=>
         cm[z.body].length>1?
           pt(z.body,I(x.f),z.rev)
         :cm[z.body](I(x.f))
-      :error(`undefined function "${z.body}"`)
+      :error(`undefined function "${z.body}"`,1)
     :z.type=='def'?
       I(ua(z,x.f).body)
     :z.type=='pt'?
@@ -389,20 +393,21 @@ ERR=e=>
   :e.stack.match`peg\\$buildStructuredError`?
     'failed to parse\n'+e.message
   :e.stack.match`Command failed`?
-    'failed to execute '+e.stack.match`Command failed: (.+)`[1]
+    `failed to execute "${e.stack.match`Command failed: (.+)`[1]}"`
   :e.stack.match`Backreference to undefined`?
     `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
   :'js error -> '+e.stack
 
-if(F=fg.get('f')){
+if(require.main!=module){
+  module.exports=this
+}else if(F=fg.get('f')){
   try{
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
     ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
     console.log('')
   }catch(e){
-    error(ERR(e))
-    process.exit(1)
+    error(ERR(e),1)
   }
 }else{
   logo=fs.readFileSync('dash.txt')+''
