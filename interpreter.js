@@ -77,7 +77,7 @@ form=x=>
   :x.type=='ls'?
     `[${isFinite(len(x))?x.body.map(I).map(form).value().join`;`:x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
   :x.type=='obj'?
-    `{${x.body.map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
+    `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
     `\x1b[92m@${form(x.body)}\x1b[0m`
   :x.map?
@@ -189,7 +189,7 @@ cm={
   every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
   some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>y.type=='obj'?y.body.get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y))),
+  get:(x,y)=>y.type=='obj'?l(y.body).get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y))),
   set:(x,y)=>
     y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
