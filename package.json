@@ -2,7 +2,7 @@
   "name": "dashlang",
   "version": "0.4.2",
   "preferGlobal": true,
-  "description": "A great leap forward in programming language design.",
+  "description": "Easy, functional, lazy.",
   "main": "interpreter.js",
   "repository": {
     "type": "git",
