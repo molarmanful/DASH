@@ -369,7 +369,7 @@ I=x=>
       cm[z.body]?
         cm[z.body].length>1?
           pt(z.body,I(x.f),z.rev)
-        :cm[z.body](I(x.f))
+        :I(cm[z.body](I(x.f)))
       :error(`undefined function "${z.body}"`,1)
     :z.type=='def'?
       I(ua(z,x.f).body)
