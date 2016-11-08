@@ -24,7 +24,7 @@ fg.defineString('f')
 fg.defineNumber('tk',10)
 fg.parse()
 
-const lex=fs.readFileSync(P.join(__dirname,'dash.pegjs'))+'',
+const lex=fs.readFileSync(__dirname+'/dash.pegjs')+'',
 parser=peg.generate(lex),
 
 lng=(x,y=0)=>y<Number.MAX_VALUE?l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0:1/0,
@@ -408,8 +408,8 @@ if(require.main!=module){
     error(ERR(e),1)
   }
 }else{
-  logo=fs.readFileSync('dash.txt')+''
-  pkg=fs.readFileSync('package.json')+''
+  logo=fs.readFileSync(__dirname+'/dash.txt')+''
+  pkg=fs.readFileSync(__dirname+'/package.json')+''
   console.log(`\x1b[36m\x1b[1m${logo.replace(/1/g,'\x1b[4m').replace(/0/g,'\x1b[24m')}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by Ben Pang (molarmanful) under the MIT License.\x1b[0m\n\n`)
   key(process.stdin)
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
