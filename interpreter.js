@@ -12,7 +12,7 @@ slp=require('sleep'),
 prompt=require('prompt-sync')({sigint:true}),
 Exec=require('child_process').execSync,
 key=require('keypress'),
-XRE=require('XRegExp')
+XRE=require('xregexp')
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
