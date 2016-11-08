@@ -427,11 +427,11 @@ if(require.main!=module){
       :0
     )
   })
-  hst=fs.readFileSync('.prompt_hist.txt')+''
+  hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
   for(;;){
     p=Prompt('DASH > ')
     Prompt.history.save()
-    hst=fs.readFileSync('.prompt_hist.txt')+''
+    hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
     try{
       console.log('\n'+form(exec(parser.parse(p))))
     }catch(e){
