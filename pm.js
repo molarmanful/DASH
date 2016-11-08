@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 fs=require('fs')
 req=require('sync-request')
 Exec=require('child_process').execSync
