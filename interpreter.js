@@ -430,8 +430,8 @@ if(require.main!=module){
   for(;;){
     p=Prompt('DASH > ')
     Prompt.history.save()
-    hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
     try{
+      hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
       console.log('\n'+form(exec(parser.parse(p))))
     }catch(e){
       error(ERR(e))
