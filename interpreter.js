@@ -415,8 +415,7 @@ if(require.main!=module){
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
   Prompt=require('prompt-sync')({
     history:require('prompt-sync-history')(),
-    sigint:true,
-    autocomplete:x=>hst.split`\n`.map(a=>~a.indexOf(x)?a:0).filter(a=>a)
+    sigint:true
   })
   process.stdin.on('keypress',(x,y)=>{
     y&&ow(
@@ -431,7 +430,6 @@ if(require.main!=module){
     p=Prompt('DASH > ')
     Prompt.history.save()
     try{
-      hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
       console.log('\n'+form(exec(parser.parse(p))))
     }catch(e){
       error(ERR(e))
