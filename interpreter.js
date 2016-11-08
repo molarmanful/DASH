@@ -427,7 +427,6 @@ if(require.main!=module){
       :0
     )
   })
-  hst=fs.readFileSync(__dirname+'/.prompt_hist.txt')+''
   for(;;){
     p=Prompt('DASH > ')
     Prompt.history.save()
