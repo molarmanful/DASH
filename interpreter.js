@@ -226,7 +226,7 @@ cm={
   xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
   not:x=>tru(+!tru(x).body),
   mstr:(x,y)=>obj(l(Object.assign({},XRE.match(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
-  xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
+  xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,(a.toFixed?num:str)(a)]).toObject()),
   rstr:(x,y)=>str(
     XRE.replace(
       y.body+'',
