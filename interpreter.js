@@ -231,9 +231,9 @@ cm={
     XRE.replace(
       y.body+'',
       rgx(x.body.get(0)),
-      (x.body.get(1)||str('')).body.charAt?
+      (x.body.get(1)||str('')).body.charAt&&(x.body.get(1)||str('')).type!='fn'&&(x.body.get(1)||str('')).type!='pt'?
         ''+(x.body.get(1)||str('')).body
-      :(a,...b)=>sform(I(app(x.body.get(1),I([a].concat(b.slice(0,-2).map(i=>str(i||'')))))))
+      :(a,...b)=>sform(I(app(x.body.get(1),I([str(a)].concat(b.slice(0,-2).map(i=>str(i||'')))))))
     )
   ),
   R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
