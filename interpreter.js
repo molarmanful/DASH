@@ -265,7 +265,8 @@ cm={
   val:x=>cm.tsp(cm.ind(x)).body.last(),
   pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
   om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value())),
-  js:x=>(eval(''+x.body),x)
+  js:x=>(eval(''+x.body),x),
+  ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y)
 };
 
 [

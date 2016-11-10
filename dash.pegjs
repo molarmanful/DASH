@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/comp/bin/oct/hex/num/bool/cond/ls/obj/var/aapp/app/def/arg/fn/a/ref
+type=str/bin/oct/hex/num/bool/cond/ls/obj/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -30,21 +30,21 @@ num=a:([0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'.'[0-9]+('e''_'?[0-9]+)?/'oo'){
     body:a!='oo'?(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a):'Infinity'
   }
 }
-bin=a:('0b'[01]+('.'[01]+)?/'.'[0-9]+){
+bin=a:('0b'([01]+('.'[01]+)?/'.'[0-9]+)){
   var f
   return{
     type:'num',
     body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
   }
 }
-oct=a:('0o'[0-8]+('.'[0-8]+)?/'.'[0-8]+){
+oct=a:('0o'([0-8]+('.'[0-8]+)?/'.'[0-8]+)){
   var f
   return{
     type:'num',
     body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
   }
 }
-hex=a:('0x'[0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+){
+hex=a:('0x'([0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+)){
   var f
   return{
     type:'num',
@@ -143,21 +143,5 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'?{
     body:a,
     f:b&&b.length?b.filter(x=>!x.big):{type:'bool',body:1},
     g:c&&c.length?c.filter(x=>!x.big):{type:'bool',body:0}
-  }
-}
-
-//composition
-comp=a:(fn/def/app/arg)_*'.'_*b:(fn/def/app/arg/comp){
-  return{
-    type:'def',
-    body:{
-      type:'app',
-      body:a,
-      f:{
-        type:'app',
-        body:b,
-        f:{type:'a',body:0}
-      }
-    }
   }
 }
