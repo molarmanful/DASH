@@ -169,9 +169,15 @@ cm={
   tan:x=>num(d.tan(num(x.body).body)),
   tanh:x=>num(d.tanh(num(x.body).body)),
   trunc:x=>num(d.trunc(num(x.body).body)),
-  cmp:(x,y)=>tru(+d(num(x.body).body).cmp(num(y.body).body)),
-  eq:(x,y)=>tru(+(num(x.body).body==num(y.body).body)),
-  eqs:(x,y)=>tru(+(num(x.body).body==num(y.body).body&&x.type==y.type)),
+  cmp:(x,y)=>tru(d(num(x.body).body).cmp(num(y.body).body)),
+  eq:(x,y)=>tru(
+    form(x)==form(y)
+    ||num(x.body).body==num(y.body).body
+    ||(x.type=='obj'&&y.type=='obj'&&
+        (X=l(x.body).sort(),Y=l(y.body).sort(),X.every((a,b)=>cm.eq(a,Y.get(b)).body))
+      )
+    ||(x.body.map&&y.body.map&&x.body.every((a,b)=>cm.eq(a,y.get(b)).body))
+  ),
   gt:(x,y)=>tru(+d(num(x.body).body).cmp(num(y.body).body)==1),
   lt:(x,y)=>tru(+d(num(x.body).body).cmp(num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(num(x.body).body).lte(num(y.body).body)),
@@ -283,7 +289,6 @@ cm={
   ['-','sub'],
   ['|-','trunc'],
   ['=','eq'],
-  ['==','eqs'],
   ['>','gt'],
   ['<','lt'],
   ['>=','gteq'],
