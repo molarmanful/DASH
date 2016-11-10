@@ -213,7 +213,7 @@ cm={
   S:(x,y)=>I(app(x,y)),
   sleep:x=>(slp.usleep(0|x.body),x),
   tt:x=>(x.rev=1,x),
-  sort:x=>ls(x.body.map(a=>a.charAt?str(a):a).sortBy(a=>num(a).body)),
+  sort:(x,y)=>ls(y.body.map(a=>a.charAt?str(a):a).sortBy(a=>num(I(app(x,a)).body).body)),
   shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
   type:x=>str(x.type),
   sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
