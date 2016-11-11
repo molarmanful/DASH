@@ -70,7 +70,7 @@ Truth Machine (enter nothing for falsy and anything for truthy):
 ```
 t\ @[
   #0
-    ? f sleep ol 1
+    ? f ol 1
     ? 0
 ];
 t rl ()
