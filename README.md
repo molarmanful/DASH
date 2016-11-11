@@ -25,15 +25,15 @@ For installation/docs, visit the [wiki](https://github.com/molarmanful/DASH/wiki
 "Hello, world!"
 ```
 
-Fibonacci sequence:
+Fibonacci sequence (overflows really quickly):
 ```
-(map
-  f \ @[
-    > #0 1
-      ? (+ f - #0 1) f - #0 2
-      ? 1
+while[
+  1
+  @[
+    get 1 #0
+    oN + (get 0 #0) (get 1 #0)
   ]
-) rng 0 10
+][oN 1; oN 1]
 ```
 
 FizzBuzz:

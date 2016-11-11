@@ -133,6 +133,7 @@ pkg=x=>{
 cm={
   os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
   ol:x=>(process.stdout.write(sform(x)),x),
+  oN:x=>(process.stdout.write(sform(x)+'\n'),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
   rl:x=>(i=prompt('',0),i?str(i):tru(0)),
   rf:x=>str(fs.readFileSync(x.body+'')+''),
