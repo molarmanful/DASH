@@ -277,7 +277,8 @@ cm={
   js:x=>(eval(''+x.body),x),
   ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y),
   sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x),
-  zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y))
+  zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
+  flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten())
 };
 
 [
