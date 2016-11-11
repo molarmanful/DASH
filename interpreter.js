@@ -258,7 +258,7 @@ cm={
   unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
   dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
   exit:x=>{process.exit()},
-  sh:x=>str(Exec(''+x.body)),
+  sh:x=>str(Exec(''+x.body)+''),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
   cns:(x,y)=>ls(y.body.consecutive(0|x.body).map(ls).rest(0|x.body-1)),
   tsp:x=>ls(x.body.first().body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
