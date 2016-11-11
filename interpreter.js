@@ -176,22 +176,24 @@ cm={
     ||(x.type=='obj'&&y.type=='obj'&&
         (X=l(x.body).sort(),Y=l(y.body).sort(),X.every((a,b)=>cm.eq(a,Y.get(b)).body))
       )
-    ||(x.body.map&&y.body.map&&x.body.every((a,b)=>cm.eq(a,y.get(b)).body))
+    ||(x.type=='ls'&&y.type=='ls'&&x.body.every((a,b)=>
+        cm.eq(x.body.charAt?str(a):a,y.body.charAt?str(y.body.get(b)):y.body.get(b)).body
+      ))
   ),
   gt:(x,y)=>tru(+d(num(x.body).body).cmp(num(y.body).body)==1),
   lt:(x,y)=>tru(+d(num(x.body).body).cmp(num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(num(x.body).body).lte(num(y.body).body)),
   gteq:(x,y)=>tru(+d(num(x.body).body).gte(num(y.body).body)),
   neg:x=>num(d(x.body).neg()),
-  map:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).map(a=>I(app(x,a)))),
-  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
-  foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
-  tkwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
-  drwl:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
-  fltr:(x,y)=>ls(y.body.map(a=>y.type=='str'?str(a):a).filter(a=>tru(I(app(x,a))).body)),
-  find:(x,y)=>y.body.map(a=>y.type=='str'?str(a):a).find(a=>tru(I(app(x,a))).body),
-  every:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).every(a=>tru(I(app(x,a))).body)),
-  some:(x,y)=>tru(y.body.map(a=>y.type=='str'?str(a):a).some(a=>tru(I(app(x,a))).body)),
+  map:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).map(a=>I(app(x,a)))),
+  fold:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
+  foldr:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
+  tkwl:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
+  drwl:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
+  fltr:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).filter(a=>tru(I(app(x,a))).body)),
+  find:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).find(a=>tru(I(app(x,a))).body),
+  every:(x,y)=>tru(y.body.map(a=>y.body.charAt?str(a):a).every(a=>tru(I(app(x,a))).body)),
+  some:(x,y)=>tru(y.body.map(a=>y.body.charAt?str(a):a).some(a=>tru(I(app(x,a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>y.type=='obj'?l(y.body).get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|x.body,len(y))),
   set:(x,y)=>
