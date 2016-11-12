@@ -368,9 +368,9 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
 })),
 
 Ua=(x,y,z)=>tr(x).map(function(a){
-  a.type=='ev'?
+  a.type=='ev'&&a.f.body==y.body?
     this.update(Ua(I(a),y,z))
-  :a.type=='fn'&&a.body==y.body&&this.update(z)
+  :(a.type=='fn'||a.type=='ref')&&a.body==y.body&&this.update(z)
 }),
 
 I=x=>
