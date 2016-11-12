@@ -150,7 +150,7 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'?{
 ev='{'a:expr*'}'_*b:var{
   return{
     type:'ev',
-    body:a,
+    body:a.filter(x=>!x.big),
     f:b.body,
     g:b.f
   }
