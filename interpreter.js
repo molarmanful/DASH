@@ -367,11 +367,19 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
   )
 })),
 
+Ua=(x,y,z)=>tr(x).map(function(a){
+  a.type=='ev'?
+    this.update(Ua(I(a),y,z))
+  :a.type=='fn'&&a.body==y.body&&this.update(z)
+}),
+
 I=x=>
   !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     tru(0)
   :x.type=='cond'?
     tru(I(x.body)).body?I(x.f):I(x.g)
+  :x.type=='ev'?
+    I(Ua(x.body,x.f,x.g))
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
@@ -406,7 +414,7 @@ I=x=>
 
 exec=x=>tr(x).map(function(a){
   if(a&&a.type=='def')this.block();
-  else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'))return 1
+  else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'||a.type=='ev'))return 1
 }).length?exec(I(x)):I(x)
 
 if(require.main!=module){

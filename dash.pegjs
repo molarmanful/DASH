@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/bin/oct/hex/num/bool/cond/ls/obj/var/aapp/app/def/arg/fn/a/ref
+type=str/bin/oct/hex/num/bool/cond/ls/ev/obj/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -143,5 +143,15 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'?{
     body:a,
     f:b&&b.length?b.filter(x=>!x.big):{type:'bool',body:1},
     g:c&&c.length?c.filter(x=>!x.big):{type:'bool',body:0}
+  }
+}
+
+//eval block
+ev='{'a:expr*'}'_*b:var{
+  return{
+    type:'ev',
+    body:a,
+    f:b.body,
+    g:b.f
   }
 }
