@@ -94,6 +94,8 @@ form=x=>
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
   :x.type=='rgx'?
     `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
+  :x.type=='ev'?
+    `{${x.body.map(form).join`;`}}${form(x.f)}\\${form(x.g)}`
   :error('failed to format JSON\n'+JSON.stringify(x),1),
 sform=x=>
   x.type=='num'?
@@ -105,7 +107,7 @@ sform=x=>
   :x.type=='ls'?
     `[ls ${isFinite(len(x))?len(x):'oo'}]`
   :x.type=='obj'?
-    `{${x.body.keys().size()}}`
+    `{obj ${x.body.keys().size()}}`
   :x.type=='def'?
     `@(expr)`
   :x.map?
@@ -118,6 +120,8 @@ sform=x=>
     '[cond]'
   :x.type=='rgx'?
     '[rgx]'
+  :x.type=='ev'?
+    `{ev ${sform(x.f)} ${sform(x.g)}}`
   :error('failed to format JSON\n'+JSON.stringify(x),1),
 
 pkg=x=>{
