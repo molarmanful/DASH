@@ -336,7 +336,8 @@ const vs={
   pi:x=>num(d.acos(-1)),
   e:x=>num(d.exp(1)),
   phi:x=>num(d.div(d.add(1,d.sqrt(5)),2)),
-  ep:x=>num('.'+'0'.repeat(d.precision)+1)
+  ep:x=>num('.'+'0'.repeat(d.precision)+1),
+  cm:x=>obj(l(cm).map((a,b)=>[b,fn(b)]).toObject())
 },
 
 error=(e,f)=>{
