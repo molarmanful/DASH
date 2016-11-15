@@ -177,10 +177,10 @@ cm={
   cmp:(x,y)=>tru(d(num(x.body).body).cmp(num(y.body).body)),
   eq:(x,y)=>tru(
     form(x)==form(y)
-    ||num(x.body).body==num(y.body).body
-    ||(x.type=='obj'&&y.type=='obj'&&
-        (X=l(x.body).sort(),Y=l(y.body).sort(),X.every((a,b)=>cm.eq(a,Y.get(b)).body))
-      )
+    ||(x.body.charAt&&y.body.charAt&&num(x.body).body==num(y.body).body)
+    ||(x.type=='obj'&&y.type=='obj'&&x.body.length==y.body.length&&(
+        x.body.every((a,b)=>cm.eq(a,y.body.get(b)).body)
+      ))
     ||(x.type=='ls'&&y.type=='ls'&&x.body.every((a,b)=>
         cm.eq(x.body.charAt?str(a):a,y.body.charAt?str(y.body.get(b)):y.body.get(b)).body
       ))
@@ -282,7 +282,9 @@ cm={
   ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y),
   sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x),
   zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
-  flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten())
+  flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
+  obj:x=>obj(x.body.map(a=>[sform(a.body.first()),(A=a.body.get(1)).charAt?str(A):A]).toObject()),
+  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x])))
 };
 
 [
