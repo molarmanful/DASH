@@ -396,7 +396,7 @@ I=x=>
   :x.type=='num'?
     num(x.body)
   :x.type=='var'?
-    (vs[x.body.body]=x.f)
+    (vs[x.body.body]=I(x.f))
   :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
     vs[x.body].call?
       vs[x.body]()
