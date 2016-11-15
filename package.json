@@ -1,6 +1,6 @@
 {
   "name": "dashlang",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "preferGlobal": true,
   "description": "Easy, functional, lazy.",
   "main": "interpreter.js",
