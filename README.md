@@ -1,3 +1,5 @@
+###NOTICE: DASH has been renamed to Wonder and now resides [here](https://github.com/wonderlang/wonder).
+
 ![DASH](dash.png?raw=true)
 
 [![NPM](https://nodei.co/npm/dashlang.png?downloads=true)](https://npmjs.org/package/dashlang)
